@@ -15,7 +15,7 @@ export async function signUpUser(data){
         console.log(response)
         return response.data
     } catch (error) {
-        console.error("Error signing up user:", error);
+        console.error("Error signing up user:", error.response.data.detail);
         throw error;
     }    
 }
@@ -31,19 +31,31 @@ export async function loginUser(data){
         localStorage.setItem('token', token);        
         return response.data.user
     } catch (error) {
-        console.error("Error signing up user:", error);
+        console.error("Error signing up user:", error.response.data.detail);
         throw error;
     }    
 }
 
-export async function getUser(username){
+export async function verifyToken(token){
+    try {
+        const response = await apiClient.get("/auth/verify-token",{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data.username
+    } catch (error) {
+        console.error("Error signing up user:", error.response.data.detail);
+        throw error;   
+    }
+}
 
+export async function getUser(username){
     try {
         const response = await apiClient.get(`/users/${username}`);
         return response.data
     } catch (error) {
-        console.error("Error signing up user:", error);
-        throw error;
+        console.error("Error geting up user:", error.response.data.detail);
+        throw error;   
     }
-
 }

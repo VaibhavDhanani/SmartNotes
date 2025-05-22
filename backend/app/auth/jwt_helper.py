@@ -1,6 +1,6 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from decouple import config
 from app.auth.auth_schema import TokenData
 from fastapi import Depends, HTTPException, status
@@ -42,7 +42,7 @@ def hash_password(password: str) -> str:
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme)):
     try:
-        token = credentials.credentials  # Extract the token
+        token = credentials.credentials
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
@@ -58,3 +58,19 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+def generate_token(data: dict, expires_delta: timedelta = None):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_token(token: str, allow_expired=False):
+    try:
+        return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except ExpiredSignatureError as e:
+        if allow_expired:
+            return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM], options={"verify_exp": False})
+        else:
+            raise e

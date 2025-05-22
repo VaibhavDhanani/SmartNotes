@@ -207,39 +207,27 @@ async def move_directory(
 @router.get("/tree/{user_id}")
 async def get_file_tree(user_id: int, db: AsyncSession = Depends(get_db)):
     """Get the complete file tree for a user"""
-    # Get all directories for the user
     dir_result = await db.execute(select(Directory).where(Directory.user_id == user_id))
     directories = dir_result.scalars().all()
-
-    # Get all documents for the user
     doc_result = await db.execute(select(Document).where(Document.user_id == user_id))
     documents = doc_result.scalars().all()
-
-    # Create a map of directory IDs to directory objects
     dir_map = {
         directory.dir_id: {"type": "folder", **directory.__dict__, "children": []}
         for directory in directories
     }
-
-    # Create the root node
-    root = {"dir_id": "root", "dir_name": "Root", "type": "folder", "children": []}
-
-    # Organize directories into a tree structure
+    result = []
     for dir_id, dir_data in dir_map.items():
         if dir_data["parent_id"] is None:
-            # This is a top-level directory
-            root["children"].append(dir_data)
+            result.append(dir_data)
         else:
-            # This directory has a parent
             parent_id = dir_data["parent_id"]
             if parent_id in dir_map:
                 dir_map[parent_id]["children"].append(dir_data)
 
-    # Add documents to their respective directories
     for document in documents:
         doc_data = {"type": "document", **document.__dict__}
         directory_id = document.directory_id
         if directory_id in dir_map:
             dir_map[directory_id]["children"].append(doc_data)
 
-    return root
+    return result

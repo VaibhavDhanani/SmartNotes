@@ -4,10 +4,10 @@ from app.db import get_db
 from app.schemas.user_schema import UserOut, UserCreate, UserLogin, UserResponse
 from app.auth.auth_schema import Token, LoginResponse
 from app.auth.auth_service import create_user, authenticate_user
-from app.auth.jwt_helper import verify_token
 from datetime import datetime, timedelta
-from app.auth.jwt_helper import create_access_token
+from app.auth.jwt_helper import create_access_token, generate_token, decode_token
 from decouple import config
+from jose import ExpiredSignatureError, JWTError
 
 router = APIRouter(tags=["auth"])
 
@@ -51,17 +51,29 @@ async def login(user: UserLogin, db: AsyncSession = Depends(get_db)):
     )
 
 
-
 @router.get("/verify-token")
 async def verify_user_token(request: Request):
-    # Extract the token from the Authorization header
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing token")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing token")
 
     token = auth_header.split(" ")[1]
     try:
-        user_data = verify_token(token)
-        return {"user": user_data}
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+        username = decode_token(token)
+        return {"username": username}
+    except ExpiredSignatureError:
+        try:
+            expired_data = decode_token(token, allow_expired=True)
+            username = expired_data.get("username")
+            if not username:
+                raise HTTPException(status_code=401, detail="Invalid token structure")
+
+            new_token = generate_token({"username": username})
+            return {
+                "username": username,
+                "newToken": new_token
+            }
+        except Exception:
+            raise HTTPException(status_code=401, detail="Expired and invalid token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")

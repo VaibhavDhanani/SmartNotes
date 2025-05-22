@@ -1,13 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff, Mail, User, Lock, UserRound } from "lucide-react";
 import SignUp from "../components/SignUp";
 import Login from "../components/Login";
+import { useUser } from "../contexts/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
+  const {isAuthenticated} = useUser();
+  const navigate = useNavigate();
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
+
+  useEffect(() => {
+    if(isAuthenticated){
+      navigate('/home');
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -34,15 +44,11 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* Form container with transition */}
         <div
           className="relative overflow-hidden"
           style={{ height: isLogin ? "300px" : "460px" }}
         >
-          {/* Login Form */}
           <Login isLogin={isLogin} toggleForm={toggleForm} />
-
-          {/* Sign Up Form */}
           <SignUp isLogin={isLogin} toggleForm={toggleForm} />
         </div>
       </div>

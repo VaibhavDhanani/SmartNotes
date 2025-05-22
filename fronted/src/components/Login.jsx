@@ -1,6 +1,6 @@
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import React, { useState } from "react";
-import { getUser, loginUser } from "../service/auth.service";
+import { loginUser } from "../service/auth.service";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
