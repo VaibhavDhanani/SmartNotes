@@ -1,6 +1,6 @@
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
-from app.models.models import Directory, Document
+from app.models.models import Directory, Document, AccessDocument, User
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
 from app.schemas.directory_schema import DirectoryCreate, DirectoryUpdate, DirectoryContents
@@ -206,28 +206,98 @@ async def move_directory(
 
 @router.get("/tree/{user_id}")
 async def get_file_tree(user_id: int, db: AsyncSession = Depends(get_db)):
-    """Get the complete file tree for a user"""
-    dir_result = await db.execute(select(Directory).where(Directory.user_id == user_id))
+    
+    # Get user's own directories
+    dir_result = await db.execute(
+        select(Directory).where(Directory.user_id == user_id)
+    )
     directories = dir_result.scalars().all()
-    doc_result = await db.execute(select(Document).where(Document.user_id == user_id))
+    
+    # Get user's own documents
+    doc_result = await db.execute(
+        select(Document).where(Document.user_id == user_id)
+    )
     documents = doc_result.scalars().all()
-    dir_map = {
-        directory.dir_id: {"type": "folder", **directory.__dict__, "children": []}
-        for directory in directories
-    }
-    result = []
+    
+    # Build directory map
+    dir_map = {}
+    for directory in directories:
+        dir_data = {
+            "id": directory.dir_id,
+            "name": directory.dir_name,
+            "type": "folder",
+            "parent_id": directory.parent_id,
+            "created_at": directory.created_at.isoformat() if directory.created_at else None,
+            "updated_at": directory.updated_at.isoformat() if directory.updated_at else None,
+            "color": directory.color,
+            "children": []
+        }
+        dir_map[directory.dir_id] = dir_data
+    
+    # Build the tree structure for directories
+    root_directories = []
     for dir_id, dir_data in dir_map.items():
         if dir_data["parent_id"] is None:
-            result.append(dir_data)
+            root_directories.append(dir_data)
         else:
             parent_id = dir_data["parent_id"]
             if parent_id in dir_map:
                 dir_map[parent_id]["children"].append(dir_data)
-
+    
+    # Add owned documents to their directories
     for document in documents:
-        doc_data = {"type": "document", **document.__dict__}
+        doc_data = {
+            "id": document.doc_id,
+            "name": document.doc_name,
+            "content": document.content,
+            "type": "document",
+            "directory_id": document.directory_id,
+            "created_at": document.created_at.isoformat() if document.created_at else None,
+            "updated_at": document.updated_at.isoformat() if document.updated_at else None
+        }
+        
         directory_id = document.directory_id
         if directory_id in dir_map:
             dir_map[directory_id]["children"].append(doc_data)
-
+    
+    # Get shared documents (documents the user has access to but doesn't own)
+    access_result = await db.execute(
+        select(AccessDocument, Document)
+        .join(Document, AccessDocument.doc_id == Document.doc_id)
+        .where(
+            AccessDocument.user_id == user_id,
+            Document.user_id != user_id
+        )
+    )
+    shared_documents = access_result.all()
+    
+    # Create shared documents section
+    shared_docs_list = []
+    for access_doc, document in shared_documents:
+        
+        user = await db.execute(
+            select(User).where(User.user_id == document.user_id)
+        )
+        user = user.scalar_one()
+        doc_data = {
+            "id": document.doc_id,
+            "name": document.doc_name,
+            "content": document.content,
+            "type": "document",
+            "access_type": "shared",
+            "permission_type": access_doc.permission_type,
+            "owner_email": user.email,
+            "shared_at": access_doc.created_at.isoformat() if access_doc.created_at else None,
+            "created_at": document.created_at.isoformat() if document.created_at else None,
+            "updated_at": document.updated_at.isoformat() if document.updated_at else None
+        }
+        shared_docs_list.append(doc_data)
+    
+    # Build final result
+    result = {
+        "user_id": user_id,
+        "owned_structure": root_directories,
+        "shared_documents": shared_docs_list
+    }
+    
     return result

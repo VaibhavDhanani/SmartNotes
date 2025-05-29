@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, UniqueConstraint,CheckConstraint, Enum
 from app.db import Base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship 
 from datetime import datetime
 import uuid
+import enum
 
 # User Model  
 class User(Base):
@@ -26,7 +27,7 @@ class Directory(Base):
     __tablename__ = "directories"
     
     dir_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    dir_name = Column(String(50), nullable=False)
+    dir_name = Column(String(50), nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.now())
     updated_at = Column(DateTime, default=datetime.now(), onupdate=datetime.now())
     user_id = Column(Integer, ForeignKey('users.user_id'), nullable=False)
@@ -60,3 +61,30 @@ class Document(Base):
     
     def __repr__(self):
         return f"<Document(id={self.doc_id}, name='{self.doc_name}', directory_id='{self.directory_id}')>"
+    
+    
+    
+class PermissionType(enum.Enum):
+    READ = "read"
+    WRITE = "write"
+    ADMIN = "admin"
+    
+
+class AccessDocument(Base):
+    __tablename__ = "access_documents"
+    
+    access_doc_id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    doc_id = Column(String(36), ForeignKey("documents.doc_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    permission_type = Column(String(20), nullable=False, default="read")
+    created_at = Column(DateTime, default=datetime.now())
+    updated_at = Column(DateTime, default=datetime.now(), onupdate=datetime.now())
+    
+    __table_args__ = (
+        CheckConstraint("permission_type IN ('read', 'write', 'admin')", name='valid_permission_type'),
+        UniqueConstraint('doc_id', 'user_id', name='unique_doc_user_access')
+    )
+    
+    # Relationships
+    document = relationship("Document", backref="access_grants")
+    user = relationship("User", backref="document_access")

@@ -64,12 +64,22 @@ wheels = [
 ]
 
 [[package]]
+name = "automerge"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/c3/88/16377e1d1b56ae70175145cf54b8eb0ee84e30e57c700b288dd08255ffd5/automerge-0.1.2.tar.gz", hash = "sha256:b4029d8bf7ed8e84e00d10d14f427e069de6bedddd7509642f1e435a520e96fe", size = 188664, upload-time = "2022-09-28T09:02:56.739Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3b/22/2c6b1f1c89fef90a4505356a77909d4d666db99730a23c0b632484ab23f8/automerge-0.1.2-cp37-abi3-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:d5150418131a2b89589e96749b284fc250cefccec9cbef471dc41c625e228889", size = 532776, upload-time = "2022-09-28T09:02:53.474Z" },
+]
+
+[[package]]
 name = "backend"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "alembic" },
     { name = "asyncpg" },
+    { name = "automerge" },
     { name = "fastapi", extra = ["all"] },
     { name = "fastapi-cors" },
     { name = "passlib", extra = ["bcrypt"] },
@@ -80,12 +90,14 @@ dependencies = [
     { name = "python-multipart" },
     { name = "sqlalchemy" },
     { name = "uvicorn" },
+    { name = "websockets" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.15.2" },
     { name = "asyncpg", specifier = ">=0.30.0" },
+    { name = "automerge", specifier = ">=0.1.2" },
     { name = "fastapi", extras = ["all"], specifier = ">=0.115.12" },
     { name = "fastapi-cors", specifier = ">=0.0.6" },
     { name = "passlib", extras = ["bcrypt"], specifier = ">=1.7.4" },
@@ -96,6 +108,7 @@ requires-dist = [
     { name = "python-multipart", specifier = ">=0.0.20" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "uvicorn", specifier = ">=0.34.2" },
+    { name = "websockets", specifier = ">=15.0.1" },
 ]
 
 [[package]]
