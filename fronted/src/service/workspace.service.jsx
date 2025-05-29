@@ -4,8 +4,11 @@ import apiClient from "../utils/server";
 export async function getWorkspaces(userId=1){
     try {
         const response = await apiClient.get(`/directories/tree/${userId}`);
-        const data = flattenData(response.data);
-        return data
+        const {owned_structure: ownData, shared_documents: sharedData} = response.data;
+        console.log("before", ownData)
+        const data = flattenData(ownData)
+        console.log("after", data)
+        return {data,sharedData}
     } catch (error) {
         console.error("Error geting workspaces:", error.response.data.detail);
         throw error;   
@@ -33,6 +36,26 @@ export async function createDocument(data){
         return response.data
     } catch (error) {
         console.error("Error creating directory:", error.response.data.detail);
+        throw error;   
+    }
+}
+
+export async function getDocument(id){
+    try {
+        const response = await apiClient.get(`/documents/${id}`);
+        return response.data
+    } catch (error) {
+        console.error("Error geting document:", error.response.data.detail);
+        throw error;   
+    }
+}
+
+export async function saveDocument(id,data){
+    try {
+        const response = await apiClient.put(`/documents/${id}`,data);
+        return response.data
+    } catch (error) {
+        console.error("Error geting document:", error.response.data.detail);
         throw error;   
     }
 }

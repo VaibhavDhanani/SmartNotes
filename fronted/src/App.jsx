@@ -27,8 +27,8 @@ function App() {
                   path="/workspace/document/:id"
                   element={<DocumentEditor />}
                 />
-                <Route path="/about" element={<h1>About (Private)</h1>} />
                 <Route path="/workspace/starred" element={<WorkSpacePage />} />
+                <Route path="/workspace/shared" element={<WorkSpacePage />} />
                 <Route path="/workspace/recent" element={<WorkSpacePage />} />
                 <Route path="/workspace/trash" element={<WorkSpacePage />} />
                 <Route path="/about" element={<h1>About (Private)</h1>} />

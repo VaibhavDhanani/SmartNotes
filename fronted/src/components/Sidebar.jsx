@@ -1,11 +1,13 @@
-import { Clock, Home, Menu, Settings, Star, Trash, X } from "lucide-react";
+import { Clock, Home, Menu, Settings, Share2, Star, Trash, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
-const Sidebar = ({ activeMenu }) => {
+const Sidebar = ({ activeMenu, setActiveMenu }) => {
   const [collapsed, setCollapsed] = useState(false);
   
   const menuItems = [
     { icon: <Home size={20} />, label: 'Home', path: '/workspace' },
+    { icon: <Share2 size={20} />, label: 'Shared', path: '/workspace/shared' },
     { icon: <Star size={20} />, label: 'Starred', path: '/workspace/starred' },
     { icon: <Clock size={20} />, label: 'Recent', path: '/workspace/recent' },
     { icon: <Trash size={20} />, label: 'Trash', path: '/workspace/trash' },
@@ -25,14 +27,15 @@ const Sidebar = ({ activeMenu }) => {
       <div className="flex flex-col flex-grow overflow-y-auto">
         <nav className="p-2">
           {menuItems.map((item, index) => (
-            <a 
+            <Link 
               key={index} 
-              href={item.path}
+              to={item.path}
+              onClick={() => setActiveMenu(item.label.toLowerCase())}
               className={`flex items-center space-x-2 p-2 rounded-md ${activeMenu === item.label.toLowerCase() ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:bg-gray-200'} mb-1`}
             >
               <div>{item.icon}</div>
               {!collapsed && <span>{item.label}</span>}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>

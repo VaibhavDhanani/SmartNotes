@@ -1,22 +1,44 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import WorkspaceHeader from "../components/WorkspaceHeader";
 import Sidebar from "../components/Sidebar";
 import WorkspaceContent from "../components/WorkspaceContent";
 import CreateItemModal from "../components/CreateItemModel";
 import { useWorkspace } from "../contexts/WorkspaceContext";
 import { createDirectory, createDocument } from "../service/workspace.service";
-import flattenData from "../utils/flatten";
 
 const WorkSpacePage = () => {
   const navigate = useNavigate();
   const { type, id } = useParams();
-  const { items, setItems, loading, error } = useWorkspace();
+  const { items, setItems, loading, error, sharedItems } = useWorkspace();
   const [currentFolderId, setCurrentFolderId] = useState(null);
   const [currentPath, setCurrentPath] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [activeMenu, setActiveMenu] = useState();
+  const location = useLocation();
+  const deletedItems = [];
+  let [rawItems, setRawItems] = useState(items);
+  useEffect(() => {
+    setActiveMenu(getActiveMenuFromPath(location.pathname));
+  }, [location.pathname]);
+
+  useEffect(() => {
+    switch (activeMenu) {
+      case "shared":
+        setRawItems(sharedItems);
+        break;
+      case "trash":
+        setRawItems(deletedItems);
+        break;
+      default:
+        setRawItems(items);
+    }
+  }, [activeMenu, items, sharedItems]);
+
+  console.log("shared", sharedItems);
+  console.log("own", items);
 
   const calculatePath = (folderId) => {
     if (!items || !Array.isArray(items)) return [];
@@ -38,7 +60,6 @@ const WorkSpacePage = () => {
     return path;
   };
 
-  // Helper function to get the full path of an item for display
   const getItemFullPath = (item) => {
     if (!item.parent_id) return item.name;
 
@@ -62,7 +83,6 @@ const WorkSpacePage = () => {
 
   useEffect(() => {
     if (!items || !Array.isArray(items)) return;
-    // console.log(items);
 
     const targetFolder = items.find(
       (item) => item.id === id && item.type === "folder"
@@ -76,32 +96,13 @@ const WorkSpacePage = () => {
     }
   }, [type, id, items, navigate]);
 
-  // Modified filtering logic for global search
-  const filteredItems =
-    items && Array.isArray(items)
-      ? items.filter((item) => {
-          // If there's a search query, search globally
-          if (searchQuery && searchQuery.trim() !== "") {
-            return item.name.toLowerCase().includes(searchQuery.toLowerCase());
-          }
-
-          // If no search query, show items in current folder only
-          return item.parent_id === currentFolderId;
-        })
-      : [];
-
-  // Add full path information to filtered items when searching
-  const itemsWithPath =
-    searchQuery && searchQuery.trim() !== ""
-      ? filteredItems.map((item) => ({
-          ...item,
-          displayPath: getItemFullPath(item),
-          isSearchResult: true,
-        }))
-      : filteredItems.map((item) => ({
-          ...item,
-          isSearchResult: false,
-        }));
+  const getActiveMenuFromPath = (pathname) => {
+    if (pathname.startsWith("/workspace/starred")) return "starred";
+    if (pathname.startsWith("/workspace/recent")) return "recent";
+    if (pathname.startsWith("/workspace/trash")) return "trash";
+    if (pathname.startsWith("/workspace/shared")) return "shared";
+    return "home";
+  };
 
   const handleItemDoubleClick = (item) => {
     if (item.type === "folder") {
@@ -125,38 +126,68 @@ const WorkSpacePage = () => {
   };
 
   const handleCreateItem = async (newItem) => {
-  try {
-    let newData;
-    
-    if (newItem.type === "folder") {
-      newData = await createDirectory(newItem);
-      newData.type = "folder";
-    } else {
-      newData = await createDocument(newItem);
-      newData.type = "document";
-    }
-    const updatedItem = flattenData(newData);
-    setItems((prevItems) => {
-      // console.log(updatedItem)
-      const updatedItems = [...prevItems, ...updatedItem];
-      return updatedItems;
-    });
-    
-    setShowCreateModal(false);
-    // console.log(updatedItem[0])
-    navigate(`/workspace/${updatedItem[0].type}/${updatedItem[0].id}`);
-  } catch (error) {
-    console.error("Error creating item:", error.response.data.detail);
-    
-  }
-};
+    try {
+      let newData;
 
-  // Clear search when navigating
+      let data = {};
+      if (newItem.type === "folder") {
+        newData = await createDirectory(newItem);
+        newData.type = "folder";
+        data.type = "folder";
+        data.id = newData.dir_id;
+        data.name = newData.dir_name;
+        data.created_at = newData.created_at;
+        data.updated_at = newData.updated_at;
+        data.color = newData.color;
+        data.parent_id = newData.parent_id;
+      } else {
+        newData = await createDocument(newItem);
+        data.type = "document";
+        data.id = newData.doc_id;
+        data.name = newData.doc_name;
+        data.created_at = newData.created_at;
+        data.updated_at = newData.updated_at;
+        data.parent_id = newData.directory_id;
+      }
+      setItems((prevItems) => {
+        const updatedItems = [...prevItems, data];
+        return updatedItems;
+      });
+
+      setShowCreateModal(false);
+      navigate(`/workspace/${data.type}/${data.id}`);
+    } catch (error) {
+      console.error("Error creating item:", error.response.data.detail);
+    }
+  };
+
   const handleClearSearch = () => {
     setSearchQuery("");
   };
 
-  // Show loading state
+  const filteredItems = Array.isArray(rawItems)
+    ? rawItems.filter((item) => {
+        if (searchQuery && searchQuery.trim() !== "") {
+          return item.name.toLowerCase().includes(searchQuery.toLowerCase());
+        }
+
+        if (activeMenu === "shared" || activeMenu === "trash") {
+          return true;
+        }
+        return item.parent_id === currentFolderId;
+      })
+    : [];
+
+  const itemsWithPath = filteredItems.map((item) => ({
+    ...item,
+    ...(searchQuery?.trim()
+      ? { displayPath: getItemFullPath(item), isSearchResult: true }
+      : { isSearchResult: false }),
+  }));
+
+  console.log("object,", itemsWithPath);
+  console.log("object,", rawItems);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -165,7 +196,6 @@ const WorkSpacePage = () => {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -182,7 +212,7 @@ const WorkSpacePage = () => {
         onClearSearch={handleClearSearch}
       />
       <div className="flex flex-grow overflow-hidden">
-        <Sidebar activeMenu="home" />
+        <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
         <div className="flex-grow w-full">
           <WorkspaceContent
             items={itemsWithPath}

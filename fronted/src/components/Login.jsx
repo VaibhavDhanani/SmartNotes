@@ -23,8 +23,7 @@ const Login = ({ isLogin, toggleForm }) => {
     e.preventDefault();
     const data = await loginUser(loginData);
     await updateUser(data);
-    navigate('/home');
-    
+    navigate('/');
   };
 
   return (

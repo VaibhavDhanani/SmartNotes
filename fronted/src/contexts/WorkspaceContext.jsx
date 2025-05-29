@@ -7,6 +7,7 @@ const WorkspaceContext = createContext();
 export const WorkspaceProvider = ({ children }) => {
   const { user, loading: userLoading } = useUser();
   const [items, setItems] = useState([]);
+  const [sharedItems, setSharedItems] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,9 +23,10 @@ export const WorkspaceProvider = ({ children }) => {
     
     try {
       // console.log("Fetching workspaces for user:", user.userId);
-      const data = await getWorkspaces(user.userId);
+      const {data,sharedData} = await getWorkspaces(user.userId);
       // console.log("Workspace data:", data);
-      setItems(data || []);
+      setItems(()=> data || []);
+      setSharedItems(()=> sharedData || []);
       setIsInitialized(true);
     } catch (error) {
       console.error("Error fetching workspaces:", error);
@@ -50,8 +52,10 @@ export const WorkspaceProvider = ({ children }) => {
   return (
     <WorkspaceContext.Provider 
       value={{ 
-        items, 
-        setItems, 
+        items,
+        sharedItems,
+        setItems,
+        setSharedItems,
         loading, 
         error, 
         refetch: fetchWorkspaceItems 
