@@ -6,17 +6,21 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
   const [isConnected, setIsConnected] = useState(false);
   const [activeUsers, setActiveUsers] = useState(0);
   const [connectionError, setConnectionError] = useState(null);
+  const [remoteCursors, setRemoteCursors] = useState(new Map());
+  const [remoteSelections, setRemoteSelections] = useState(new Map());
   const lastUpdateRef = useRef("");
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttempts = useRef(0);
   const maxReconnectAttempts = 5;
+  const currentUserIdRef = useRef(userId || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
 
   const connect = useCallback(() => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       return;
     }
 
-    const wsUrl = `ws://127.0.0.1:8000/ws/${docId}${userId ? `?user_id=${userId}` : ''}${userName ? `&user_name=${encodeURIComponent(userName)}` : ''}`;
+    const currentUserId = currentUserIdRef.current;
+    const wsUrl = `ws://127.0.0.1:8000/ws/${docId}?user_id=${encodeURIComponent(currentUserId)}${userName ? `&user_name=${encodeURIComponent(userName)}` : ''}`;
     
     console.log(`Connecting to WebSocket: ${wsUrl}`);
     socketRef.current = new WebSocket(wsUrl);
@@ -36,6 +40,10 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
     socketRef.current.onclose = (event) => {
       console.log("WebSocket disconnected", event.code, event.reason);
       setIsConnected(false);
+      
+      // Clear remote cursors and selections on disconnect
+      setRemoteCursors(new Map());
+      setRemoteSelections(new Map());
       
       // Attempt to reconnect if not intentionally closed
       if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
@@ -66,29 +74,70 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
             
           case "update":
             // Content update from other users
-            if (data.content !== lastUpdateRef.current && data.user_id !== userId) {
+            if (data.content !== lastUpdateRef.current && data.user_id !== currentUserId) {
               setContent(data.content);
               lastUpdateRef.current = data.content;
             }
             break;
             
           case "user_joined":
-            console.log(`User ${data.user_id} joined`);
+            console.log(`User ${data.user_name || data.user_id} joined`);
             setActiveUsers(data.active_users);
             break;
             
           case "user_left":
-            console.log(`User ${data.user_id} left`);
+            console.log(`User ${data.user_name || data.user_id} left`);
             setActiveUsers(data.active_users);
             break;
             
           case "cursor_update":
-            console.log("Cursor update:", data);
+            // Update remote cursor position
+            if (data.user_id !== currentUserId) {
+              setRemoteCursors(prev => {
+                const newCursors = new Map(prev);
+                newCursors.set(data.user_id, {
+                  position: data.position,
+                  user_name: data.user_name || 'Anonymous',
+                  color: data.color || '#3b82f6',
+                  timestamp: Date.now()
+                });
+                return newCursors;
+              });
+            }
             break;
             
-          case "selection":
-            // Handle text selection from other users
-            console.log("Selection update:", data);
+          case "cursor_removed":
+            // Remove cursor when user disconnects
+            setRemoteCursors(prev => {
+              const newCursors = new Map(prev);
+              newCursors.delete(data.user_id);
+              return newCursors;
+            });
+            break;
+            
+          case "selection_update":
+            // Update remote text selection
+            if (data.user_id !== currentUserId) {
+              setRemoteSelections(prev => {
+                const newSelections = new Map(prev);
+                newSelections.set(data.user_id, {
+                  selection: data.selection,
+                  user_name: data.user_name || 'Anonymous',
+                  color: data.color || '#3b82f6',
+                  timestamp: Date.now()
+                });
+                return newSelections;
+              });
+            }
+            break;
+            
+          case "selection_removed":
+            // Remove selection when user clears selection
+            setRemoteSelections(prev => {
+              const newSelections = new Map(prev);
+              newSelections.delete(data.user_id);
+              return newSelections;
+            });
             break;
             
           case "pong":
@@ -107,7 +156,7 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
         console.error("Error parsing WebSocket message:", error);
       }
     };
-  }, [docId, userId, userName, setContent]);
+  }, [docId, userName, setContent]);
 
   useEffect(() => {
     connect();
@@ -136,6 +185,36 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
     return () => clearInterval(heartbeat);
   }, [isConnected]);
 
+  // Cleanup old cursors and selections
+  useEffect(() => {
+    const cleanup = setInterval(() => {
+      const now = Date.now();
+      const timeout = 30000; // 30 seconds
+
+      setRemoteCursors(prev => {
+        const newCursors = new Map();
+        for (const [userId, cursor] of prev) {
+          if (now - cursor.timestamp < timeout) {
+            newCursors.set(userId, cursor);
+          }
+        }
+        return newCursors;
+      });
+
+      setRemoteSelections(prev => {
+        const newSelections = new Map();
+        for (const [userId, selection] of prev) {
+          if (now - selection.timestamp < timeout) {
+            newSelections.set(userId, selection);
+          }
+        }
+        return newSelections;
+      });
+    }, 10000); // Check every 10 seconds
+
+    return () => clearInterval(cleanup);
+  }, []);
+
   const sendUpdate = useCallback((content) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       // Avoid sending duplicate updates
@@ -148,7 +227,7 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
       const message = {
         type: "update",
         content,
-        user_id: userId,
+        user_id: currentUserIdRef.current,
         timestamp: Date.now()
       };
       
@@ -156,27 +235,27 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
     } else {
       console.warn("WebSocket not connected, cannot send update");
     }
-  }, [userId]);
+  }, []);
 
   const sendCursorPosition = useCallback((position) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "cursor",
         position,
-        user_id: userId
+        user_id: currentUserIdRef.current
       }));
     }
-  }, [userId]);
+  }, []);
 
   const sendSelection = useCallback((selection) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify({
         type: "selection",
         selection,
-        user_id: userId
+        user_id: currentUserIdRef.current
       }));
     }
-  }, [userId]);
+  }, []);
 
   const reconnect = useCallback(() => {
     if (socketRef.current) {
@@ -193,6 +272,9 @@ export default function useCollaborativeEditing(docId, setContent, userId = null
     isConnected, 
     activeUsers, 
     connectionError,
-    reconnect
+    remoteCursors,
+    remoteSelections,
+    reconnect,
+    userId: currentUserIdRef.current
   };
 }

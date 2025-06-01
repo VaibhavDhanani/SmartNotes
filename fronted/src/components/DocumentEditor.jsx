@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getDocument, saveDocument } from "../service/workspace.service";
-import {throttle} from "lodash";
+import { throttle } from "lodash";
 import {
   ArrowLeft,
   Save,
@@ -16,6 +16,13 @@ import {
 } from "lucide-react";
 import useCollaborativeEditing from "../hooks/useCollaborativeEditing";
 import { useUser } from "../contexts/UserContext";
+import RemoteSelection from "./RemoteSelection";
+import RemoteCursor from "./RemoteCursor";
+import Editor from "./Editor";
+
+// Remote Cursor Component
+
+// Remote Selection Component
 
 const DocumentEditor = () => {
   const { id } = useParams();
@@ -25,26 +32,53 @@ const DocumentEditor = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
-  const textareaRef = useRef(null);
-  const {user} = useUser();
-  
-  const [collaborators, setCollaborators] = useState([
-    { id: 1, name: "John Doe", initials: "JD", color: "bg-blue-600" },
-    { id: 2, name: "Alice Smith", initials: "AS", color: "bg-green-600" },
-    { id: 3, name: "Bob Wilson", initials: "BW", color: "bg-purple-600" },
-  ]);
 
-  const { 
-    sendUpdate, 
+  const { user } = useUser();
+
+  const [editorAPI, setEditorAPI] = useState(null);
+  const [savedDelta, setSavedDelta] = useState(null);
+  const [htmlPreview, setHtmlPreview] = useState('');
+
+  const handleSave = () => {
+    if (!editorAPI) return;
+    const delta = editorAPI.getDelta();
+    const html = editorAPI.getHTML();
+
+    setSavedDelta(delta);
+    setHtmlPreview(html);
+
+    console.log('Delta saved to DB:', delta); // Save this to your backend
+  };
+
+  const handleLoad = () => {
+    if (editorAPI && savedDelta) {
+      editorAPI.setDelta(savedDelta);
+    }
+  };
+
+  const handleInsertText = () => {
+    if (editorAPI) {
+      editorAPI.insertText('🔥 Inserted from Parent! ');
+    }
+  };
+
+  const handleClear = () => {
+    editorAPI?.clear();
+  };
+
+  const {
+    sendUpdate,
     sendCursorPosition,
     sendSelection,
-    isConnected, 
-    activeUsers, 
+    isConnected,
+    activeUsers,
     connectionError,
-    reconnect 
-  } = useCollaborativeEditing(id, setContent, user.userId, user.username);
+    remoteCursors,
+    remoteSelections,
+    reconnect,
+    userId,
+  } = useCollaborativeEditing(id, setContent, user?.userId, user?.username);
 
-  // Fetch document data when component mounts
   useEffect(() => {
     const fetchDocument = async () => {
       try {
@@ -62,86 +96,33 @@ const DocumentEditor = () => {
     fetchDocument();
   }, [id]);
 
-  // Auto-save functionality
-  useEffect(() => {
-    if (!document || !content) return;
+  // const handleSave = async (isAutoSave = false) => {
+  //   if (!document || isSaving) return;
 
-    const autoSaveTimeout = setTimeout(async () => {
-      if (content !== document.content) {
-        await handleSave(true);
-      }
-    }, 2000); // Auto-save after 2 seconds of inactivity
+  //   try {
+  //     setIsSaving(true);
+  //     const data = {
+  //       doc_name: document.doc_name,
+  //       directory_id: document.directory_id,
+  //       content,
+  //     };
 
-    return () => clearTimeout(autoSaveTimeout);
-  }, [content, document]);
+  //     await saveDocument(document.doc_id, data);
+  //     setLastSaved(new Date());
 
-  useEffect(() => {
-  const handleMouseMove = throttle((e) => {
-    const position = { x: e.clientX, y: e.clientY };
-    sendCursorPosition(position);
-  },100);
-
-  window.addEventListener("mousemove", handleMouseMove);
-
-  return () => {
-    window.removeEventListener("mousemove", handleMouseMove);
-  };
-}, []);
-
-  // Handle document save
-  const handleSave = async (isAutoSave = false) => {
-    if (!document || isSaving) return;
-    
-    try {
-      setIsSaving(true);
-      const data = {
-        doc_name: document.doc_name, 
-        directory_id: document.directory_id, 
-        content
-      };
-      
-      await saveDocument(document.doc_id, data);
-      setLastSaved(new Date());
-      
-      if (!isAutoSave) {
-        console.log("Document saved manually");
-      }
-    } catch (error) {
-      console.error("Error saving document:", error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  //     if (!isAutoSave) {
+  //       console.log("Document saved manually");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error saving document:", error);
+  //   } finally {
+  //     setIsSaving(false);
+  //   }
+  // };
 
   const handleBack = () => {
     navigate(-1);
   };
-
-  const handleContentChange = useCallback((e) => {
-    const newText = e.target.value;
-    setContent(newText);
-    sendUpdate(newText);
-  }, [sendUpdate]);
-
-  const handleCursorChange = useCallback(() => {
-    if (textareaRef.current) {
-      const { selectionStart, selectionEnd } = textareaRef.current;
-      sendCursorPosition({ start: selectionStart, end: selectionEnd });
-    }
-  }, [sendCursorPosition]);
-
-  const handleSelectionChange = useCallback(() => {
-    if (textareaRef.current) {
-      const { selectionStart, selectionEnd } = textareaRef.current;
-      if (selectionStart !== selectionEnd) {
-        sendSelection({
-          start: selectionStart,
-          end: selectionEnd,
-          text: content.substring(selectionStart, selectionEnd)
-        });
-      }
-    }
-  }, [sendSelection, content]);
 
   if (isLoading) {
     return (
@@ -172,10 +153,15 @@ const DocumentEditor = () => {
                 <FileIcon size={18} />
               </div>
               <div>
-                <h1 className="font-semibold text-gray-800 text-lg">{document?.name}</h1>
+                <h1 className="font-semibold text-gray-800 text-lg">
+                  {document?.name}
+                </h1>
                 <div className="flex items-center space-x-2 text-xs text-gray-500">
                   <span>
-                    Last updated {document?.updated_at ? new Date(document.updated_at).toLocaleString() : 'Never'}
+                    Last updated{" "}
+                    {document?.updated_at
+                      ? new Date(document.updated_at).toLocaleString()
+                      : "Never"}
                   </span>
                   {lastSaved && (
                     <span>• Auto-saved {lastSaved.toLocaleTimeString()}</span>
@@ -186,23 +172,7 @@ const DocumentEditor = () => {
           </div>
 
           <div className="flex items-center space-x-3">
-            {/* Collaborators */}
-            <div className="flex -space-x-2">
-              {collaborators.slice(0, 3).map((user) => (
-                <div
-                  key={user.id}
-                  className={`${user.color} text-white h-8 w-8 rounded-full flex items-center justify-center border-2 border-white text-sm font-medium transition-transform hover:scale-110`}
-                  title={user.name}
-                >
-                  {user.initials}
-                </div>
-              ))}
-              {collaborators.length > 3 && (
-                <div className="bg-gray-500 text-white h-8 w-8 rounded-full flex items-center justify-center border-2 border-white text-xs font-medium">
-                  +{collaborators.length - 3}
-                </div>
-              )}
-            </div>
+            {/* Real-time Collaborators from WebSocket */}
 
             {/* Action buttons */}
             <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -260,32 +230,39 @@ const DocumentEditor = () => {
       )}
 
       {/* Document Editor */}
-      <div className="flex-grow overflow-auto">
-        <div className="max-w-4xl mx-auto my-8 px-4">
-          <div className="bg-white shadow-lg rounded-xl border border-gray-200 min-h-[800px] p-8 transition-shadow hover:shadow-xl">
-            <textarea
-              ref={textareaRef}
-              value={content}
-              onChange={handleContentChange}
-              onSelect={handleSelectionChange}
-              onKeyUp={handleCursorChange}
-              onClick={handleCursorChange}
-              className="w-full h-full min-h-[700px] focus:outline-none resize-none font-mono text-gray-800 leading-relaxed"
-              placeholder="Start typing your document content here..."
-              spellCheck={false}
-            />
-          </div>
-        </div>
+      <div className="p-6 bg-gray-50 min-h-screen">
+      <h1 className="text-3xl font-bold mb-4">Rich Text Editor with Quill</h1>
+
+      <Editor onReady={setEditorAPI} />
+
+      <div className="mt-6 flex gap-4 flex-wrap">
+        <button onClick={handleSave} className="px-4 py-2 bg-blue-600 text-white rounded">
+          Save Delta
+        </button>
+        <button onClick={handleLoad} className="px-4 py-2 bg-green-600 text-white rounded">
+          Load Delta
+        </button>
+        <button onClick={handleInsertText} className="px-4 py-2 bg-purple-600 text-white rounded">
+          Insert Text
+        </button>
+        <button onClick={handleClear} className="px-4 py-2 bg-red-600 text-white rounded">
+          Clear
+        </button>
       </div>
+    </div>
 
       {/* Enhanced Status Bar */}
       <footer className="bg-white border-t border-gray-200 py-3 px-4 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {/* Connection Status */}
           <div className="flex items-center space-x-2">
-            <div className={`h-2 w-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+            <div
+              className={`h-2 w-2 rounded-full ${
+                isConnected ? "bg-green-500" : "bg-red-500"
+              }`}
+            ></div>
             <span className="text-sm text-gray-600">
-              {isConnected ? 'Connected' : 'Disconnected'}
+              {isConnected ? "Connected" : "Disconnected"}
             </span>
             {isConnected ? (
               <Wifi size={16} className="text-green-500" />
@@ -296,7 +273,9 @@ const DocumentEditor = () => {
 
           {/* Document Stats */}
           <div className="text-sm text-gray-500">
-            {content.length} characters • {content.split(/\s+/).filter(word => word.length > 0).length} words
+            {content.length} characters •{" "}
+            {content.split(/\s+/).filter((word) => word.length > 0).length}{" "}
+            words
           </div>
 
           {/* Save Status */}
@@ -312,7 +291,7 @@ const DocumentEditor = () => {
         <div className="flex items-center space-x-2">
           <Users size={16} className="text-gray-500" />
           <span className="text-sm text-gray-600">
-            {activeUsers} user{(activeUsers) !== 1 ? 's' : ''} online
+            {activeUsers} user{activeUsers !== 1 ? "s" : ""} online
           </span>
         </div>
       </footer>
