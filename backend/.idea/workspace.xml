@@ -5,18 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0684e1f9-ae60-4358-9c1f-2b5167feefdf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6/storage_v2/_src_/database/smartnote_db.AmpsAQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6/storage_v2/_src_/database/smartnote_db.AmpsAQ/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models/websocket_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/websocket_manager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/routes/websocket.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/websocket.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/32436975f31b_modified_access_document.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/3c2d06d9586d_access_document_created.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/3d65f730b989_dirs_and_document_created.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/4f4ec622d0cc_modified_access_document2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/6c60db311add_create_users.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/8987f1032d1d_modified_access_document3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/fedf53dd8925_create_users_2.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../fronted/src/components/DocumentEditor.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/components/DocumentEditor.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Editor.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/components/Editor.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fronted/src/components/RemoteCursor.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/components/RemoteCursor.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fronted/src/contexts/UserContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/contexts/UserContext.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../fronted/src/hooks/useCollaborativeEditing.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/hooks/useCollaborativeEditing.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../fronted/src/service/workspace.service.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/service/workspace.service.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,27 +34,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/vaibhav-dhanani/Desktop/Vaibhav/SmartNotes/backend/app/main.py",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/vaibhav-dhanani/Desktop/Vaibhav/SmartNotes/backend/app/main.py&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="main" type="Python.FastAPI">
       <option name="file" value="$PROJECT_DIR$/app/main.py" />
@@ -89,7 +90,9 @@
       <option name="presentableId" value="Default" />
       <updated>1748580986952</updated>
       <workItem from="1748580989043" duration="7115000" />
-      <workItem from="1748748472616" duration="14000000" />
+      <workItem from="1748748472616" duration="14366000" />
+      <workItem from="1748840227886" duration="5619000" />
+      <workItem from="1748879779209" duration="3807000" />
     </task>
     <servers />
   </component>

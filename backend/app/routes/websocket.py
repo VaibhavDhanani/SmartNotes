@@ -49,6 +49,7 @@ async def websocket_endpoint(
                         position,
                         current_user_name
                     )
+                    # print(manager.user_cursors[doc_id])
 
                 elif msg_type == "selection":
                     # Update text selection

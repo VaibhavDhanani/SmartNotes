@@ -210,6 +210,7 @@ class DocumentManager:
             "position": position,
             "color": color
         })
+        # print(self.user_cursors[doc_id])
 
     async def update_selection(self, doc_id: str, user_id: str, selection: Dict, user_name: str = "Anonymous"):
         """Update and broadcast text selection"""

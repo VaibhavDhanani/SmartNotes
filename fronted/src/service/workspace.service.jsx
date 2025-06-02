@@ -5,12 +5,12 @@ export async function getWorkspaces(userId=1){
     try {
         const response = await apiClient.get(`/directories/tree/${userId}`);
         const {owned_structure: ownData, shared_documents: sharedData} = response.data;
-        console.log("before", ownData)
+        // console.log("before", ownData)
         const data = flattenData(ownData)
-        console.log("after", data)
+        // console.log("after", data)
         return {data,sharedData}
     } catch (error) {
-        console.error("Error geting workspaces:", error.response.data.detail);
+        console.error("Error geting workspaces:", error);
         throw error;   
     }
 }

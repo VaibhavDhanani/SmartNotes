@@ -1,7 +1,7 @@
 const flattenData = (data) => {
   const result = [];
 
-  console.log(data)
+  // console.log(data)
   const traverse = (node, parentId = null) => {
     if (node.type === 'folder') {
       result.push({
