@@ -7,6 +7,7 @@ const flattenData = (data) => {
       result.push({
         type: 'folder',
         id: node.id,
+        isStared: node.is_stared,
         parent_id: node.parent_id || parentId,
         name: node.name,
         created_at: node.created_at,
@@ -21,6 +22,7 @@ const flattenData = (data) => {
       result.push({
         type: 'document',
         id: node.id,
+        isStared: node.is_stared,
         parent_id: node.directory_id || parentId,
         name: node.name,
         content: node.content || "",

@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import apiClient from "../utils/server";
 
 
@@ -32,6 +33,7 @@ export async function loginUser(data){
         return response.data.user
     } catch (error) {
         console.error("Error signing up user:", error.response.data.detail);
+        toast.error(error.response.data.detail)
         throw error;
     }    
 }

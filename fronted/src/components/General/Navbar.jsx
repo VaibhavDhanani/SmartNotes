@@ -78,22 +78,7 @@ const Navbar = () => {
             ))}
           </div>
           
-          {/* Right section - CTA */}
-          <div className="flex items-center">
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="text-right">
-                <div className="text-white font-semibold text-sm">
-                  Welcome to the Future
-                </div>
-                <div className="text-blue-100 text-xs">
-                  of Document Management
-                </div>
-              </div>
-              <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <ChevronRight className="h-4 w-4 text-white" />
-              </div>
-            </div>
-          </div>
+          
         </div>
       </div>
       

@@ -1,8 +1,9 @@
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import React, { useState } from "react";
-import { loginUser } from "../service/auth.service";
+import { loginUser } from "../../service/auth.service";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../../contexts/UserContext";
+import { toast } from "react-toastify";
 
 const Login = ({ isLogin, toggleForm }) => {
   const [loginData, setLoginData] = useState({
@@ -23,6 +24,7 @@ const Login = ({ isLogin, toggleForm }) => {
     e.preventDefault();
     const data = await loginUser(loginData);
     await updateUser(data);
+    toast.success("Login done successfully");
     navigate('/');
   };
 

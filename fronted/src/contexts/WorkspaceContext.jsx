@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { getWorkspaces } from "../service/workspace.service";
 import { useUser } from "./UserContext";
+import { getWorkspaces } from "../service/workspace.service";
 
 const WorkspaceContext = createContext();
 
@@ -20,13 +20,11 @@ export const WorkspaceProvider = ({ children }) => {
 
     setLoading(true);
     setError(null);
-    
+
     try {
-      // console.log("Fetching workspaces for user:", user.userId);
-      const {data,sharedData} = await getWorkspaces(user.userId);
-      // console.log("Workspace data:", data);
-      setItems(()=> data || []);
-      setSharedItems(()=> sharedData || []);
+      const { data, sharedData } = await getWorkspaces(user.userId);
+      setItems(() => data || []);
+      setSharedItems(() => sharedData || []);
       setIsInitialized(true);
     } catch (error) {
       console.error("Error fetching workspaces:", error);
@@ -38,8 +36,6 @@ export const WorkspaceProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    // console.log("WorkspaceContext useEffect - user:", user, "userLoading:", userLoading);
-    
     if (userLoading) {
       return;
     }
@@ -50,15 +46,15 @@ export const WorkspaceProvider = ({ children }) => {
   }, [user, userLoading, isInitialized]);
 
   return (
-    <WorkspaceContext.Provider 
-      value={{ 
+    <WorkspaceContext.Provider
+      value={{
         items,
         sharedItems,
         setItems,
         setSharedItems,
-        loading, 
-        error, 
-        refetch: fetchWorkspaceItems 
+        loading,
+        error,
+        refetch: fetchWorkspaceItems,
       }}
     >
       {children}

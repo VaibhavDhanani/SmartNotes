@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import WorkspaceHeader from "../components/WorkspaceHeader";
-import Sidebar from "../components/Sidebar";
-import WorkspaceContent from "../components/WorkspaceContent";
-import CreateItemModal from "../components/CreateItemModel";
 import { useWorkspace } from "../contexts/WorkspaceContext";
+import { useEffect, useState } from "react";
+import { useUser } from "../contexts/UserContext";
 import { createDirectory, createDocument } from "../service/workspace.service";
+import { toast } from "react-toastify";
+import Sidebar from "../components/General/Sidebar";
+import CreateItemModal from "../components/Workspace/CreateItemModel";
+import WorkspaceHeader from "../components/Workspace/WorkspaceHeader";
+import WorkspaceContent from "../components/Workspace/WorkspaceContent";
+
 
 const WorkSpacePage = () => {
   const navigate = useNavigate();
@@ -18,27 +21,27 @@ const WorkSpacePage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeMenu, setActiveMenu] = useState();
   const location = useLocation();
-  const deletedItems = [];
-  let [rawItems, setRawItems] = useState(items);
+  let [rawItems, setRawItems] = useState([]);
+  const { user, logout } = useUser();
+
   useEffect(() => {
     setActiveMenu(getActiveMenuFromPath(location.pathname));
   }, [location.pathname]);
 
+  // console.log("selectedItem",selectedItem)
+
   useEffect(() => {
     switch (activeMenu) {
       case "shared":
-        setRawItems(sharedItems);
+        setRawItems(sharedItems || []);
         break;
-      case "trash":
-        setRawItems(deletedItems);
+      case "stared":
+        setRawItems((items || []).filter((item) => item.isStared));
         break;
       default:
         setRawItems(items);
     }
   }, [activeMenu, items, sharedItems]);
-
-  console.log("shared", sharedItems);
-  console.log("own", items);
 
   const calculatePath = (folderId) => {
     if (!items || !Array.isArray(items)) return [];
@@ -97,7 +100,7 @@ const WorkSpacePage = () => {
   }, [type, id, items, navigate]);
 
   const getActiveMenuFromPath = (pathname) => {
-    if (pathname.startsWith("/workspace/starred")) return "starred";
+    if (pathname.startsWith("/workspace/stared")) return "stared";
     if (pathname.startsWith("/workspace/recent")) return "recent";
     if (pathname.startsWith("/workspace/trash")) return "trash";
     if (pathname.startsWith("/workspace/shared")) return "shared";
@@ -155,6 +158,7 @@ const WorkSpacePage = () => {
       });
 
       setShowCreateModal(false);
+      toast.success(`${data.name} created successfully`);
       navigate(`/workspace/${data.type}/${data.id}`);
     } catch (error) {
       console.error("Error creating item:", error.response.data.detail);
@@ -170,10 +174,10 @@ const WorkSpacePage = () => {
         if (searchQuery && searchQuery.trim() !== "") {
           return item.name.toLowerCase().includes(searchQuery.toLowerCase());
         }
-
-        if (activeMenu === "shared" || activeMenu === "trash") {
+        if (activeMenu === "shared") {
           return true;
         }
+
         return item.parent_id === currentFolderId;
       })
     : [];
@@ -184,17 +188,6 @@ const WorkSpacePage = () => {
       ? { displayPath: getItemFullPath(item), isSearchResult: true }
       : { isSearchResult: false }),
   }));
-
-  console.log("object,", itemsWithPath);
-  console.log("object,", rawItems);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-lg">Loading workspace...</div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -210,21 +203,31 @@ const WorkSpacePage = () => {
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
         onClearSearch={handleClearSearch}
+        user={user}
+        logout={logout}
       />
       <div className="flex flex-grow overflow-hidden">
         <Sidebar activeMenu={activeMenu} setActiveMenu={setActiveMenu} />
         <div className="flex-grow w-full">
-          <WorkspaceContent
-            items={itemsWithPath}
-            currentPath={currentPath}
-            onItemClick={handleItemClick}
-            onItemDoubleClick={handleItemDoubleClick}
-            onCreateNewClick={() => setShowCreateModal(true)}
-            onNavigate={handleNavigate}
-            selectedItem={selectedItem}
-            isSearchMode={searchQuery && searchQuery.trim() !== ""}
-            searchQuery={searchQuery}
-          />
+          {loading ? (
+            <div className="flex items-center justify-center h-screen">
+              <div className="text-lg">Loading workspace...</div>
+            </div>
+          ) : (
+            <WorkspaceContent
+              items={itemsWithPath}
+              currentTab={activeMenu}
+              setItems={setItems}
+              currentPath={currentPath}
+              onItemClick={handleItemClick}
+              onItemDoubleClick={handleItemDoubleClick}
+              onCreateNewClick={() => setShowCreateModal(true)}
+              onNavigate={handleNavigate}
+              selectedItem={selectedItem}
+              isSearchMode={searchQuery && searchQuery.trim() !== ""}
+              searchQuery={searchQuery}
+            />
+          )}
         </div>
 
         <CreateItemModal

@@ -4,7 +4,6 @@ import { getUser, verifyToken } from "../service/auth.service";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  // const navigate = useNavigate();
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -27,8 +26,8 @@ export const UserProvider = ({ children }) => {
       try {
         const token = localStorage.getItem("token");
         if (token) {
-        const data = await verifyToken(token);
-        // console.log(data.username)
+          const data = await verifyToken(token);
+          // console.log(data.username)
           const userInfo = await getUser(data.username);
           // console.log(userInfo)
           updateUser(userInfo);
@@ -41,7 +40,7 @@ export const UserProvider = ({ children }) => {
           setIsAuthenticated(false);
         }
       } catch (err) {
-        console.error("hello",err.response.data.detail);
+        console.error("hello", err.response.data.detail);
         localStorage.removeItem("token");
         setIsAuthenticated(false);
       }
@@ -66,8 +65,22 @@ export const UserProvider = ({ children }) => {
     });
   };
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    setUser({
+      username: "",
+      email: "",
+      gender: "",
+      userId: null,
+      fullName: "",
+    });
+  };
+
   return (
-    <UserContext.Provider value={{ user, updateUser, isAuthenticated, loading }}>
+    <UserContext.Provider
+      value={{ user, updateUser, isAuthenticated, loading, logout }}
+    >
       {children}
     </UserContext.Provider>
   );

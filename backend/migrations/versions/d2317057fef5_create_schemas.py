@@ -1,8 +1,8 @@
-"""migrating schemas
+"""create schemas
 
-Revision ID: 43abd182dfe9
+Revision ID: d2317057fef5
 Revises: 
-Create Date: 2025-06-01 09:34:08.778854
+Create Date: 2025-06-04 19:31:55.048979
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '43abd182dfe9'
+revision: str = 'd2317057fef5'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -63,10 +63,10 @@ def upgrade() -> None:
     sa.Column('access_doc_id', sa.String(length=36), nullable=False),
     sa.Column('doc_id', sa.String(length=36), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('permission_type', sa.String(length=20), nullable=False),
+    sa.Column('permission', sa.String(length=20), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.CheckConstraint("permission_type IN ('read', 'write', 'admin')", name='valid_permission_type'),
+    sa.CheckConstraint("permission IN ('view', 'edit', 'owner')", name='valid_permission_type'),
     sa.ForeignKeyConstraint(['doc_id'], ['documents.doc_id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
     sa.PrimaryKeyConstraint('access_doc_id'),

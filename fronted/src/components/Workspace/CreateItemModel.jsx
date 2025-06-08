@@ -1,6 +1,7 @@
 import { File as FileIcon, Folder } from "lucide-react";
 import { useState } from "react";
-import { useUser } from "../contexts/UserContext";
+import { useUser } from "../../contexts/UserContext";
+import { toast } from "react-toastify";
 
 const CreateItemModal = ({ isOpen, onClose, onCreateItem, parentFolderId }) => {
   const {user} = useUser();
@@ -11,6 +12,11 @@ const CreateItemModal = ({ isOpen, onClose, onCreateItem, parentFolderId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(itemType === "document" && (parentFolderId === null || parentFolderId === undefined)){
+      toast.warn("Please create document in inside any directory");
+      onClose();
+      return
+    }
     if (itemName.trim() && user) {
       onCreateItem({
         userId: user.userId,

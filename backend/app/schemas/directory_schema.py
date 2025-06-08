@@ -17,10 +17,12 @@ class DirectoryUpdate(BaseModel):
     dir_name: Optional[str] = Field(None, min_length=1, max_length=50)
     color: Optional[str] = Field(None, pattern="^#[0-9a-fA-F]{6}$")
     parent_id: Optional[str] = None
+    is_stared: Optional[bool] = False
 
 class DirectoryResponse(DirectoryBase):
     dir_id: str
     parent_id: Optional[str] = None
+    is_stared: Optional[bool] = False
     user_id: int
     created_at: datetime
     updated_at: datetime
@@ -31,11 +33,3 @@ class DirectoryResponse(DirectoryBase):
 class DirectoryTree(DirectoryResponse):
     children: List['DirectoryTree'] = []
 
-class DirectoryContentsItem(BaseModel):
-    type: str  # "folder" or "document"
-
-class DirectoryContents(BaseModel):
-    dir_id: str
-    dir_name: str
-    parent_id: Optional[str] = None
-    children: List[Dict[str, Any]] = []

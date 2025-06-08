@@ -1,19 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 const RemoteCursor = ({ cursor, userId, currentUserId }) => {
   const [isVisible, setIsVisible] = useState(true);
 
-  // Don't show cursor for current user
   if (userId === currentUserId) {
     return null;
   }
 
-  // Handle cursor visibility (fade out after inactivity)
   useEffect(() => {
     setIsVisible(true);
     const timer = setTimeout(() => {
       setIsVisible(false);
-    }, 5000); // Hide after 5 seconds of inactivity
+    }, 10000);
 
     return () => clearTimeout(timer);
   }, [cursor.position, cursor.timestamp]);
@@ -26,21 +24,20 @@ const RemoteCursor = ({ cursor, userId, currentUserId }) => {
 
   return (
     <div
-      className="absolute pointer-events-none z-50 transition-all duration-150 ease-out"
+      className="absolute pointer-events-none z-10 transition-all duration-150 ease-out"
       style={{
         left: `${offsetX}px`,
         top: `${offsetY}px`,
-        transform: 'translate(-50%, -50%)',
+        transform: "translate(-50%, -50%)",
       }}
     >
-      {/* Cursor pointer */}
+      
       <div
         className="relative"
         style={{
-          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.1))",
         }}
       >
-        {/* Main cursor shape */}
         <svg
           width="20"
           height="20"
@@ -57,26 +54,24 @@ const RemoteCursor = ({ cursor, userId, currentUserId }) => {
           />
         </svg>
 
-        {/* User name label */}
         <div
           className="absolute top-4 left-4 px-2 py-1 rounded-md text-xs font-medium text-white whitespace-nowrap transform transition-all duration-200"
           style={{
             backgroundColor: cursor.color,
-            fontSize: '10px',
-            minWidth: 'max-content',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            fontSize: "10px",
+            minWidth: "max-content",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
           }}
         >
-          {cursor.user_name || 'Anonymous'}
+          {cursor.user_name || "Anonymous"}
         </div>
 
-        {/* Cursor tail/trail effect */}
         <div
           className="absolute w-1 h-1 rounded-full opacity-60 animate-ping"
           style={{
             backgroundColor: cursor.color,
-            left: '8px',
-            top: '8px',
+            left: "8px",
+            top: "8px",
           }}
         />
       </div>
@@ -84,8 +79,7 @@ const RemoteCursor = ({ cursor, userId, currentUserId }) => {
   );
 };
 
-// Container component to render all cursors
-const RemoteCursors = ({ remoteCursors, containerRef, currentUserId }) => {
+const RemoteCursors = ({ remoteCursors, currentUserId }) => {
   if (!remoteCursors || remoteCursors.size === 0) {
     return null;
   }
@@ -94,12 +88,12 @@ const RemoteCursors = ({ remoteCursors, containerRef, currentUserId }) => {
     <div
       className="absolute inset-0 pointer-events-none overflow-hidden"
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 1000,
+        width: "100%",
+        height: "100%",
+        zIndex: 10,
       }}
     >
       {Array.from(remoteCursors.entries()).map(([userId, cursor]) => (

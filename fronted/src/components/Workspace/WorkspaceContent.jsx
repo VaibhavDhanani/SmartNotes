@@ -1,10 +1,14 @@
-import { Folder, Plus, Search, X } from "lucide-react";
+import { Folder, Plus, Search, Share } from "lucide-react";
+import { toast } from "react-toastify";
+import { deleteItem, updateItem } from "../../service/workspace.service";
+import Breadcrumb from "../General/Breadcrumb";
 import WorkspaceItem from "./WorkspaceItem";
-import Breadcrumb from "./Breadcrumb";
 
 const WorkspaceContent = ({
   items,
+  setItems,
   currentPath,
+  currentTab,
   onItemDoubleClick,
   onCreateNewClick,
   onNavigate,
@@ -13,7 +17,84 @@ const WorkspaceContent = ({
   isSearchMode,
   searchQuery,
 }) => {
-  
+  const handleRename = async (item, newName) => {
+    const toastId = toast.loading("Renaming...");
+    try {
+      const updatedItem = { ...item, name: newName };
+      const response = await updateItem(updatedItem);
+      toast.update(toastId, {
+        render: "Item renamed successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      setItems((items) =>
+        items.map((i) => (i.id === item.id ? { ...i, name: newName } : i))
+      );
+
+      // toast.success("Item renamed successfully");
+    } catch (error) {
+      console.log(error);
+      toast.update(toastId, {
+        render: "Rename failed. Please try again. 🤯",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const existingNames = items.map((item) => item.name);
+  // console.log(existingNames);
+  // console.log(currentTab);
+
+  const handleDelete = async (item) => {
+    
+    const toastId = toast.loading("Deleting...");
+    try {
+      const response = await deleteItem(item);
+      toast.update(toastId, {
+        render: "Item deleted successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      setItems((items) => items.filter((i) => i.id !== item.id));
+    } catch (error) {
+      console.log(error);
+      toast.update(toastId, {
+        render: "Delete failed. Please try again. 🤯",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
+
+  const handleStar = async (item) => {
+    const toastId = toast.loading("Toggling star...");
+    try {
+      const response = await updateItem(item);
+      toast.update(toastId, {
+        render: "Item starred successfully!",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000,
+      });
+      setItems((items) =>
+        items.map((i) => (i.id === item.id ? { ...i, isStared: !i.isStared } : i))
+      );
+    } catch (error) {
+      console.log(error);
+      toast.update(toastId, {
+        render: "Star failed. Please try again.",
+        type: "error",
+        isLoading: false,
+        autoClose: 3000,
+      });
+    }
+  };
+
   return (
     <div className="flex-grow p-6 h-full flex flex-col">
       {!isSearchMode && (
@@ -68,7 +149,7 @@ const WorkspaceContent = ({
               <p className="text-lg font-medium mb-2">No results found</p>
               <p>Try searching with different keywords</p>
             </div>
-          ) : (
+          ) : currentTab === "home" ? (
             <div>
               <Folder size={48} className="mx-auto mb-4" />
               <p>This folder is empty.</p>
@@ -79,19 +160,29 @@ const WorkspaceContent = ({
                 Create new item
               </button>
             </div>
+          ) : (
+            <div>
+              <Share size={48} className="mx-auto mb-4" />
+              <p>No any document shared with you yet </p>
+            </div>
           )}
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
             {items.map((item) => (
-              <div key={item.id} className="">
+              <div key={item.id}>
                 <div>
                   <WorkspaceItem
                     item={item}
                     onItemClick={onItemClick}
                     onItemDoubleClick={onItemDoubleClick}
                     isSelected={selectedItem?.id === item.id}
+                    onUpdate={(item) => console.log("update", item)}
+                    onDelete={handleDelete}
+                    onStar={handleStar}
+                    onRename={handleRename}
+                    existingNames={existingNames}
                   />
 
                   {/* Show path for search results */}

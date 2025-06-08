@@ -19,9 +19,9 @@
 16389||-9223372036854775808|T|G
 16389||16384|T|G
 16389||16387|T|G</Grants>
-      <IntrospectionStateNumber>6144</IntrospectionStateNumber>
+      <IntrospectionStateNumber>23554</IntrospectionStateNumber>
       <ServerVersion>17.5</ServerVersion>
-      <StartupTime>1748880033</StartupTime>
+      <StartupTime>1749184718</StartupTime>
       <TimeZones>true ACDT
 true ACSST
 false ACST
@@ -821,8 +821,16 @@ false Zulu
 2200||6171|U|G
 13194||10|C|G
 13194||-9223372036854775808|U|G
-13194||10|U|G</Grants>
-      <IntrospectionStateNumber>6144</IntrospectionStateNumber>
+13194||10|U|G
+40960||-9223372036854775808|C|G
+40960||16387|C|G
+40960||-9223372036854775808|U|G
+40960||16387|U|G
+49152||-9223372036854775808|C|G
+49152||16387|C|G
+49152||-9223372036854775808|U|G
+49152||16387|U|G</Grants>
+      <IntrospectionStateNumber>23554</IntrospectionStateNumber>
       <ObjectId>16389</ObjectId>
       <OwnerName>smartnote_db_owner</OwnerName>
     </database>
@@ -4262,120 +4270,121 @@ false Zulu
       <OwnerName>cloud_admin</OwnerName>
     </schema>
     <schema id="267" parent="3" name="public">
-      <Comment>standard public schema</Comment>
       <Current>1</Current>
-      <IntrospectionStateNumber>6144</IntrospectionStateNumber>
-      <LastIntrospectionLocalTimestamp>2025-06-02.16:00:51</LastIntrospectionLocalTimestamp>
-      <ObjectId>2200</ObjectId>
-      <StateNumber>531</StateNumber>
-      <OwnerName>pg_database_owner</OwnerName>
+      <IntrospectionStateNumber>23554</IntrospectionStateNumber>
+      <LastIntrospectionLocalTimestamp>2025-06-06.04:40:31</LastIntrospectionLocalTimestamp>
+      <ObjectId>49152</ObjectId>
+      <StateNumber>14340</StateNumber>
+      <OwnerName>smartnote_db_owner</OwnerName>
     </schema>
     <sequence id="268" parent="267" name="users_user_id_seq">
-      <ObjectId>32773</ObjectId>
+      <ObjectId>49209</ObjectId>
       <SequenceIdentity>1</SequenceIdentity>
       <StartValue>1</StartValue>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>integer|0s</StoredType>
       <OwnerName>smartnote_db_owner</OwnerName>
     </sequence>
     <table id="269" parent="267" name="access_documents">
-      <ObjectId>32821</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49257</ObjectId>
+      <StateNumber>14345</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>smartnote_db_owner</OwnerName>
     </table>
     <table id="270" parent="267" name="alembic_version">
-      <ObjectId>32768</ObjectId>
-      <StateNumber>2048</StateNumber>
+      <ObjectId>49153</ObjectId>
+      <StateNumber>14343</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>smartnote_db_owner</OwnerName>
     </table>
     <table id="271" parent="267" name="directories">
-      <ObjectId>32785</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49221</ObjectId>
+      <StateNumber>14345</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>smartnote_db_owner</OwnerName>
     </table>
     <table id="272" parent="267" name="documents">
-      <ObjectId>32802</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49238</ObjectId>
+      <StateNumber>14345</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>smartnote_db_owner</OwnerName>
     </table>
     <table id="273" parent="267" name="users">
-      <ObjectId>32774</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49210</ObjectId>
+      <StateNumber>14345</StateNumber>
       <AccessMethodId>2</AccessMethodId>
       <OwnerName>smartnote_db_owner</OwnerName>
     </table>
     <check id="274" parent="269" name="valid_permission_type">
-      <ColNames>permission_type</ColNames>
-      <ObjectId>32824</ObjectId>
-      <Predicate>(permission_type)::text = ANY ((ARRAY[&apos;read&apos;::character varying, &apos;write&apos;::character varying, &apos;admin&apos;::character varying])::text[])</Predicate>
-      <StateNumber>2049</StateNumber>
+      <ColNames>permission</ColNames>
+      <ObjectId>49260</ObjectId>
+      <Predicate>(permission)::text = ANY ((ARRAY[&apos;view&apos;::character varying, &apos;edit&apos;::character varying, &apos;owner&apos;::character varying])::text[])</Predicate>
+      <StateNumber>14345</StateNumber>
     </check>
     <column id="275" parent="269" name="access_doc_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="276" parent="269" name="doc_id">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="277" parent="269" name="user_id">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
-    <column id="278" parent="269" name="permission_type">
+    <column id="278" parent="269" name="permission">
       <NotNull>1</NotNull>
       <Position>4</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(20)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="279" parent="269" name="created_at">
       <Position>5</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="280" parent="269" name="updated_at">
       <Position>6</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <foreign-key id="281" parent="269" name="access_documents_doc_id_fkey">
       <ColNames>doc_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32829</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>65536</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>23552</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>32802</RefTableId>
+      <RefTableId>49238</RefTableId>
     </foreign-key>
     <foreign-key id="282" parent="269" name="access_documents_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32834</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>65541</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>23552</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>32774</RefTableId>
+      <RefTableId>49210</RefTableId>
     </foreign-key>
     <index id="283" parent="269" name="access_documents_pkey">
       <ColNames>access_doc_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32825</ObjectId>
+      <ObjectId>49261</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4385,8 +4394,8 @@ false Zulu
     <index id="284" parent="269" name="unique_doc_user_access">
       <ColNames>doc_id
 user_id</ColNames>
-      <ObjectId>32827</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49263</ObjectId>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4395,28 +4404,28 @@ user_id</ColNames>
     </index>
     <key id="285" parent="269" name="access_documents_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32826</ObjectId>
+      <ObjectId>49262</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32825</UnderlyingIndexId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49261</UnderlyingIndexId>
     </key>
     <key id="286" parent="269" name="unique_doc_user_access">
-      <ObjectId>32828</ObjectId>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32827</UnderlyingIndexId>
+      <ObjectId>49264</ObjectId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49263</UnderlyingIndexId>
     </key>
     <column id="287" parent="270" name="version_num">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>2048</StateNumber>
+      <StateNumber>14343</StateNumber>
       <StoredType>varchar(32)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <index id="288" parent="270" name="alembic_version_pkc">
       <ColNames>version_num</ColNames>
-      <ObjectId>32771</ObjectId>
+      <ObjectId>49156</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2048</StateNumber>
+      <StateNumber>14343</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4424,78 +4433,80 @@ user_id</ColNames>
       <CollationParentNames>pg_catalog</CollationParentNames>
     </index>
     <key id="289" parent="270" name="alembic_version_pkc">
-      <ObjectId>32772</ObjectId>
+      <ObjectId>49157</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2048</StateNumber>
-      <UnderlyingIndexId>32771</UnderlyingIndexId>
+      <StateNumber>14343</StateNumber>
+      <UnderlyingIndexId>49156</UnderlyingIndexId>
     </key>
     <column id="290" parent="271" name="dir_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="291" parent="271" name="dir_name">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="292" parent="271" name="created_at">
       <Position>3</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="293" parent="271" name="updated_at">
       <Position>4</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="294" parent="271" name="user_id">
       <NotNull>1</NotNull>
       <Position>5</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="295" parent="271" name="parent_id">
       <Position>6</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="296" parent="271" name="color">
       <Position>7</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(7)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <foreign-key id="297" parent="271" name="directories_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32797</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>65551</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>23552</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>32774</RefTableId>
+      <RefTableId>49210</RefTableId>
     </foreign-key>
     <foreign-key id="298" parent="271" name="directories_parent_id_fkey">
       <ColNames>parent_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32792</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>65546</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>23552</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>32785</RefTableId>
+      <RefTableId>49221</RefTableId>
     </foreign-key>
     <index id="299" parent="271" name="directories_pkey">
       <ColNames>dir_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32788</ObjectId>
+      <ObjectId>49224</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4505,8 +4516,8 @@ user_id</ColNames>
     <index id="300" parent="271" name="directories_dir_name_key">
       <ColNames>dir_name</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32790</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49226</ObjectId>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4515,85 +4526,87 @@ user_id</ColNames>
     </index>
     <key id="301" parent="271" name="directories_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32789</ObjectId>
+      <ObjectId>49225</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32788</UnderlyingIndexId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49224</UnderlyingIndexId>
     </key>
     <key id="302" parent="271" name="directories_dir_name_key">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32791</ObjectId>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32790</UnderlyingIndexId>
+      <ObjectId>49227</ObjectId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49226</UnderlyingIndexId>
     </key>
     <column id="303" parent="272" name="doc_id">
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="304" parent="272" name="doc_name">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(50)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="305" parent="272" name="content">
       <Position>3</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>text|0s</StoredType>
       <TypeId>25</TypeId>
     </column>
     <column id="306" parent="272" name="created_at">
       <Position>4</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="307" parent="272" name="updated_at">
       <Position>5</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>timestamp|0s</StoredType>
       <TypeId>1114</TypeId>
     </column>
     <column id="308" parent="272" name="user_id">
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>integer|0s</StoredType>
       <TypeId>23</TypeId>
     </column>
     <column id="309" parent="272" name="directory_id">
       <NotNull>1</NotNull>
       <Position>7</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar(36)|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <foreign-key id="310" parent="272" name="documents_user_id_fkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32816</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>65561</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>23552</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>32774</RefTableId>
+      <RefTableId>49210</RefTableId>
     </foreign-key>
     <foreign-key id="311" parent="272" name="documents_directory_id_fkey">
       <ColNames>directory_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32811</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>65556</ObjectId>
+      <OnDelete>cascade</OnDelete>
+      <StateNumber>23552</StateNumber>
       <RefKeyColPositions>1</RefKeyColPositions>
-      <RefTableId>32785</RefTableId>
+      <RefTableId>49221</RefTableId>
     </foreign-key>
     <index id="312" parent="272" name="documents_pkey">
       <ColNames>doc_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32807</ObjectId>
+      <ObjectId>49243</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4603,8 +4616,8 @@ user_id</ColNames>
     <index id="313" parent="272" name="documents_doc_name_key">
       <ColNames>doc_name</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32809</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49245</ObjectId>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4613,72 +4626,72 @@ user_id</ColNames>
     </index>
     <key id="314" parent="272" name="documents_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32808</ObjectId>
+      <ObjectId>49244</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32807</UnderlyingIndexId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49243</UnderlyingIndexId>
     </key>
     <key id="315" parent="272" name="documents_doc_name_key">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32810</ObjectId>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32809</UnderlyingIndexId>
+      <ObjectId>49246</ObjectId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49245</UnderlyingIndexId>
     </key>
     <column id="316" parent="273" name="user_id">
       <DefaultExpression>nextval(&apos;users_user_id_seq&apos;::regclass)</DefaultExpression>
       <NotNull>1</NotNull>
       <Position>1</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>integer|0s</StoredType>
-      <SequenceId>32773</SequenceId>
+      <SequenceId>49209</SequenceId>
       <TypeId>23</TypeId>
     </column>
     <column id="317" parent="273" name="username">
       <NotNull>1</NotNull>
       <Position>2</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="318" parent="273" name="email">
       <NotNull>1</NotNull>
       <Position>3</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="319" parent="273" name="gender">
       <Position>4</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="320" parent="273" name="full_name">
       <Position>5</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <column id="321" parent="273" name="hashed_password">
       <NotNull>1</NotNull>
       <Position>6</Position>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <StoredType>varchar|0s</StoredType>
       <TypeId>1043</TypeId>
     </column>
     <index id="322" parent="273" name="users_pkey">
       <ColNames>user_id</ColNames>
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32780</ObjectId>
+      <ObjectId>49216</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
     </index>
     <index id="323" parent="273" name="ix_users_username">
       <ColNames>username</ColNames>
-      <ObjectId>32784</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49220</ObjectId>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4687,8 +4700,8 @@ user_id</ColNames>
     </index>
     <index id="324" parent="273" name="ix_users_email">
       <ColNames>email</ColNames>
-      <ObjectId>32782</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49218</ObjectId>
+      <StateNumber>14345</StateNumber>
       <Unique>1</Unique>
       <AccessMethodId>403</AccessMethodId>
       <CollationNames>default</CollationNames>
@@ -4697,16 +4710,16 @@ user_id</ColNames>
     </index>
     <index id="325" parent="273" name="ix_users_user_id">
       <ColNames>user_id</ColNames>
-      <ObjectId>32783</ObjectId>
-      <StateNumber>2049</StateNumber>
+      <ObjectId>49219</ObjectId>
+      <StateNumber>14345</StateNumber>
       <AccessMethodId>403</AccessMethodId>
     </index>
     <key id="326" parent="273" name="users_pkey">
       <NameSurrogate>1</NameSurrogate>
-      <ObjectId>32781</ObjectId>
+      <ObjectId>49217</ObjectId>
       <Primary>1</Primary>
-      <StateNumber>2049</StateNumber>
-      <UnderlyingIndexId>32780</UnderlyingIndexId>
+      <StateNumber>14345</StateNumber>
+      <UnderlyingIndexId>49216</UnderlyingIndexId>
     </key>
   </database-model>
 </dataSource>

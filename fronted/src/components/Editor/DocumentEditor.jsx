@@ -1,8 +1,7 @@
-import { WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useUser } from "../contexts/UserContext";
-import { getDocument } from "../service/workspace.service";
+import { useUser } from "../../contexts/UserContext";
+import { getDocumentData } from "../../service/workspace.service";
 import Editor from "./Editor";
 
 const DocumentEditor = () => {
@@ -12,14 +11,16 @@ const DocumentEditor = () => {
   const { user } = useUser();
   const [editorAPI, setEditorAPI] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [sharedAccess, setSharedAccess] = useState([]);
 
   useEffect(() => {
     const fetchDocument = async () => {
       try {
         setIsLoading(true);
-        const mockDocument = await getDocument(id);
+        const { mockDocument, sharedAccess } = await getDocumentData(id);
+        // console.log(mockDocument,sharedAccess)
+        setSharedAccess(sharedAccess);
         setDocument(mockDocument);
-        console.log(mockDocument.content);
         setContent(mockDocument.content);
       } catch (error) {
         console.error("Error fetching document:", error);
@@ -47,10 +48,12 @@ const DocumentEditor = () => {
       <Editor
         onReady={setEditorAPI}
         id={id}
+        userDocument={document}
         setContent={setContent}
         userId={user.userId}
         username={user.username}
         content={content}
+        sharedAccess={sharedAccess}
       />
     </div>
   );

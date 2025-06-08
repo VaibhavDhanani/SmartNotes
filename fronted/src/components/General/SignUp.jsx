@@ -1,8 +1,9 @@
 import { Eye, EyeOff, Lock, Mail, User, UserRound } from "lucide-react";
 import React, { useState } from "react";
-import { signUpUser } from "../service/auth.service";
-import { useUser } from "../contexts/UserContext";
+import { signUpUser } from "../../service/auth.service";
+import { useUser } from "../../contexts/UserContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const SignUp = ({ isLogin, toggleForm }) => {
   const navigate = useNavigate();
@@ -25,6 +26,7 @@ const SignUp = ({ isLogin, toggleForm }) => {
     e.preventDefault();
     const data = await signUpUser(signupData)
     await updateUser(data);
+    toast.success("User created successfully");
     navigate('/');
     
   };

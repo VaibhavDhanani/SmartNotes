@@ -1,9 +1,8 @@
-import { FileText, Users, Clock, Zap, ChevronRight, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Hero from '../components/Hero';
-import Features from '../components/Features';
-import HowItWorks from '../components/HowItWorks';
-import Navbar from '../components/Navbar';
+import Features from '../components/General/Features';
+import Hero from '../components/General/Hero';
+import HowItWorks from '../components/General/HowItWorks';
+import Navbar from '../components/General/Navbar';
 
 const HomePage = () => {
   const navigate = useNavigate();

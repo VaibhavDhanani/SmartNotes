@@ -1,17 +1,17 @@
 const HowItWorks = () => {
   const steps = [
     {
-      number: "01",
+      number: "1",
       title: "Create a Workspace",
       description: "Set up your collaborative environment for your team."
     },
     {
-      number: "02",
+      number: "2",
       title: "Invite Team Members",
       description: "Add your colleagues to collaborate on documents together."
     },
     {
-      number: "03",
+      number: "3",
       title: "Start Editing",
       description: "Create and edit documents with real-time updates."
     }

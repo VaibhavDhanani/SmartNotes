@@ -1,4 +1,3 @@
-// useCollaborativeEditing.js
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useUser } from "../contexts/UserContext";
 
@@ -8,7 +7,6 @@ export default function useCollaborativeEditing(docId, setContent) {
   const [activeUsers, setActiveUsers] = useState(0);
   const [connectionError, setConnectionError] = useState(null);
   const [remoteCursors, setRemoteCursors] = useState(new Map());
-  const [remoteSelections, setRemoteSelections] = useState(new Map());
   const lastUpdateRef = useRef("");
   const reconnectTimeoutRef = useRef(null);
   const reconnectAttempts = useRef(0);
@@ -34,6 +32,7 @@ export default function useCollaborativeEditing(docId, setContent) {
 
     socketRef.current.onopen = () => {
       console.log("WebSocket connected");
+      setActiveUsers(prev => prev + 1);
       setIsConnected(true);
       setConnectionError(null);
       reconnectAttempts.current = 0;
@@ -48,7 +47,6 @@ export default function useCollaborativeEditing(docId, setContent) {
       console.log("WebSocket disconnected", event.code, event.reason);
       setIsConnected(false);
       setRemoteCursors(new Map());
-      setRemoteSelections(new Map());
       if (
         event.code !== 1000 &&
         reconnectAttempts.current < maxReconnectAttempts
@@ -72,10 +70,8 @@ export default function useCollaborativeEditing(docId, setContent) {
       try {
         const data = JSON.parse(event.data);
         // console.log(data);
-
         switch (data.type) {
           case "init":
-            // Initial content when joining
             if (data.content !== lastUpdateRef.current) {
               setContent(data.content);
               lastUpdateRef.current = data.content;
@@ -83,7 +79,6 @@ export default function useCollaborativeEditing(docId, setContent) {
             break;
 
           case "update":
-            // Content update from other users
             if (
               data.content !== lastUpdateRef.current &&
               data.user_id !== currentUserId
@@ -104,8 +99,7 @@ export default function useCollaborativeEditing(docId, setContent) {
             break;
 
           case "cursor_update":
-            // Update remote cursor position - ONLY for other users
-            if ((data.user_id) !== (currentUserId)) {
+            if (String((data.user_id)) !== String(currentUserId)) {
 
               setRemoteCursors((prev) => {
                 const newCursors = new Map(prev);
@@ -131,35 +125,6 @@ export default function useCollaborativeEditing(docId, setContent) {
               newCursors.delete(data.user_id);
               return newCursors;
             });
-            break;
-
-          case "selection_update":
-            // Update remote text selection
-            if (data.user_id !== currentUserId) {
-              setRemoteSelections((prev) => {
-                const newSelections = new Map(prev);
-                newSelections.set(data.user_id, {
-                  selection: data.selection,
-                  user_name: data.user_name || "Anonymous",
-                  color: data.color || "#3b82f6",
-                  timestamp: Date.now(),
-                });
-                return newSelections;
-              });
-            }
-            break;
-
-          case "selection_removed":
-            // Remove selection when user clears selection
-            setRemoteSelections((prev) => {
-              const newSelections = new Map(prev);
-              newSelections.delete(data.user_id);
-              return newSelections;
-            });
-            break;
-
-          case "pong":
-            // Heartbeat response
             break;
 
           case "error":
@@ -202,7 +167,6 @@ export default function useCollaborativeEditing(docId, setContent) {
     return () => clearInterval(heartbeat);
   }, [isConnected]);
 
-  // Cleanup old cursors and selections
   useEffect(() => {
     const cleanup = setInterval(() => {
       const now = Date.now();
@@ -218,15 +182,6 @@ export default function useCollaborativeEditing(docId, setContent) {
         return newCursors;
       });
 
-      setRemoteSelections((prev) => {
-        const newSelections = new Map();
-        for (const [userId, selection] of prev) {
-          if (now - selection.timestamp < timeout) {
-            newSelections.set(userId, selection);
-          }
-        }
-        return newSelections;
-      });
     }, 10000); // Check every 10 seconds
 
     return () => clearInterval(cleanup);
@@ -234,7 +189,6 @@ export default function useCollaborativeEditing(docId, setContent) {
 
   const sendUpdate = useCallback((content) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      // Avoid sending duplicate updates
       if (content === lastUpdateRef.current) {
         return;
       }
@@ -257,7 +211,7 @@ export default function useCollaborativeEditing(docId, setContent) {
   const sendCursorPosition = useCallback(
     (position) => {
       if (socketRef.current?.readyState === WebSocket.OPEN) {
-        // Only send if position is valid
+        
         if (
           position &&
           typeof position.offsetX === "number" &&
@@ -305,7 +259,6 @@ export default function useCollaborativeEditing(docId, setContent) {
     activeUsers,
     connectionError,
     remoteCursors,
-    remoteSelections,
     reconnect,
   };
 }
