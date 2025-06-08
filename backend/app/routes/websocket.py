@@ -17,7 +17,6 @@ async def websocket_endpoint(
         user_id: Optional[str] = Query(None),
         user_name: Optional[str] = Query(None)
 ):
-    """WebSocket endpoint for collaborative editing"""
     try:
         await manager.connect(doc_id, websocket, user_id, user_name)
 
@@ -31,7 +30,6 @@ async def websocket_endpoint(
                 current_user_name = user_name or "Anonymous"
 
                 if msg_type == "update":
-                    # Broadcast content update to other users
                     await manager.broadcast_to_others(doc_id, websocket, {
                         "type": "update",
                         "content": message.get("content", ""),
@@ -41,7 +39,6 @@ async def websocket_endpoint(
                     })
 
                 elif msg_type == "cursor":
-                    # Update cursor position
                     position = message.get("position", {})
                     await manager.update_cursor_position(
                         doc_id,
@@ -50,21 +47,6 @@ async def websocket_endpoint(
                         current_user_name
                     )
                     # print(manager.user_cursors[doc_id])
-
-                elif msg_type == "selection":
-                    # Update text selection
-                    selection = message.get("selection", {})
-                    await manager.update_selection(
-                        doc_id,
-                        current_user_id,
-                        selection,
-                        current_user_name
-                    )
-
-                elif msg_type == "ping":
-                    # Respond to heartbeat
-                    await websocket.send_json({"type": "pong"})
-
                 else:
                     logger.warning(f"Unhandled message type: {msg_type}")
 
@@ -88,31 +70,3 @@ async def websocket_endpoint(
         logger.error(f"WebSocket error: {e}")
     finally:
         await manager.disconnect(doc_id, websocket, user_id)
-
-
-@router.get("/documents/{doc_id}/active-users")
-async def get_active_users(doc_id: str):
-    """Get active users count for a document"""
-    return {
-        "doc_id": doc_id,
-        "active_users": manager.get_active_users_count(doc_id)
-    }
-
-
-@router.get("/documents/{doc_id}/users")
-async def get_document_users(doc_id: str):
-    """Get all users currently editing a document"""
-    users = []
-    if doc_id in manager.active_connections:
-        for conn_info in manager.active_connections[doc_id]:
-            users.append({
-                "user_id": conn_info["user_id"],
-                "user_name": conn_info["user_name"],
-                "connected_at": conn_info["connected_at"]
-            })
-
-    return {
-        "doc_id": doc_id,
-        "users": users,
-        "total_users": len(users)
-    }

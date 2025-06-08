@@ -5,50 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0684e1f9-ae60-4358-9c1f-2b5167feefdf" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6/storage_v2/_src_/database/smartnote_db.AmpsAQ/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/6bb4927b-6245-4461-b152-93971d44e6d6/storage_v2/_src_/database/smartnote_db.AmpsAQ/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/access_document_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/access_document_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/routes/directory_routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/directory_routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/access_document.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/access_document.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/directory_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/directory_schema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schemas/document_schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/schemas/document_schema.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/migrations/versions/43abd182dfe9_migrating_schemas.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/App.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Breadcrumb.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/CollborativeCursers.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/CreateItemModel.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/DocumentEditor.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Editor.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/EditorFooter.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/EditorHeader.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Features.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Footer.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Hero.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/HowItWorks.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Layout.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Login.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Navbar.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/PrivateRoute.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/RemoteCursor.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/RemoteSelection.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/Sidebar.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/SignUp.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/WorkspaceContent.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/WorkspaceHeader.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/components/WorkspaceItem.jsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/contexts/UserContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/contexts/UserContext.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/contexts/WorkspaceContext.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/contexts/WorkspaceContext.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/hooks/useCollaborativeEditing.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/hooks/useCollaborativeEditing.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/pages/AuthPage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/pages/AuthPage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/pages/HomePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/pages/HomePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/pages/WorkSpacePage.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/pages/WorkSpacePage.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/service/auth.service.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/service/auth.service.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/service/workspace.service.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/service/workspace.service.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../fronted/src/utils/flatten.js" beforeDir="false" afterPath="$PROJECT_DIR$/../fronted/src/utils/flatten.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/websocket_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/websocket_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routes/websocket.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routes/websocket.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +87,7 @@
       <workItem from="1749009129086" duration="25612000" />
       <workItem from="1749181308662" duration="4689000" />
       <workItem from="1749350698521" duration="7371000" />
-      <workItem from="1749383303434" duration="747000" />
+      <workItem from="1749383303434" duration="3193000" />
     </task>
     <servers />
   </component>
