@@ -11,8 +11,7 @@ from app.auth.jwt_helper import get_current_user
 from app.auth.auth_schema import TokenData
 
 origins = [
-    "http://localhost:5173",  # Vite React default port
-    "http://127.0.0.1:3000",
+    "*",
 ]
 
 app = FastAPI()
