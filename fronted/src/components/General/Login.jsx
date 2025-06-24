@@ -55,7 +55,7 @@ const Login = ({ isLogin, toggleForm }) => {
                 value={loginData.email}
                 onChange={handleLoginChange}
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="your@email.com"
+                placeholder="test1@test.com"
               />
             </div>
           </div>
@@ -79,7 +79,7 @@ const Login = ({ isLogin, toggleForm }) => {
                 value={loginData.password}
                 onChange={handleLoginChange}
                 className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="••••••••"
+                placeholder="test@123"
               />
               <button
                 type="button"
@@ -91,31 +91,6 @@ const Login = ({ isLogin, toggleForm }) => {
                 ) : (
                   <Eye size={18} className="text-gray-400" />
                 )}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={() => setRememberMe(!rememberMe)}
-                className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-700"
-              >
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <button className="font-medium text-blue-500 hover:text-blue-600">
-                Forgot password?
               </button>
             </div>
           </div>

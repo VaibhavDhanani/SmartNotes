@@ -1,9 +1,6 @@
-# websocket_manager.py
 from fastapi import WebSocket
 from typing import Dict, List, Optional, Any
 from collections import defaultdict
-import json
-import asyncio
 import logging
 import time
 
@@ -59,6 +56,7 @@ class DocumentManager:
         except Exception as e:
             logger.error(f"Error connecting to document {doc_id}: {e}")
 
+
     async def disconnect(self, doc_id: str, websocket: WebSocket, user_id: Optional[str] = None):
         try:
             connection_to_remove = None
@@ -71,7 +69,6 @@ class DocumentManager:
                 self.active_connections[doc_id].remove(connection_to_remove)
                 disconnected_user_id = connection_to_remove["user_id"]
 
-                # Clean up cursor and selection data
                 if doc_id in self.user_cursors and disconnected_user_id in self.user_cursors[doc_id]:
                     del self.user_cursors[doc_id][disconnected_user_id]
 
@@ -80,14 +77,13 @@ class DocumentManager:
                     "user_id": disconnected_user_id
                 })
 
-                # Notify other users about disconnection
                 await self.broadcast_to_others(doc_id, websocket, {
                     "type": "user_left",
                     "user_id": disconnected_user_id,
                     "active_users": len(self.active_connections[doc_id])
                 })
 
-            # Clean up empty document connections
+            
             if not self.active_connections[doc_id]:
                 if doc_id in self.document_content:
                     del self.document_content[doc_id]
@@ -104,11 +100,9 @@ class DocumentManager:
         if doc_id not in self.active_connections:
             return
 
-        # Update document content if it's a content update
         if message.get("type") == "update":
             self.document_content[doc_id] = message.get("content", "")
 
-        # Send to all connections
         disconnected = []
         for conn_info in self.active_connections[doc_id][:]:
             try:
@@ -117,7 +111,6 @@ class DocumentManager:
                 logger.error(f"Error sending message to connection: {e}")
                 disconnected.append(conn_info)
 
-        # Remove disconnected connections
         for conn_info in disconnected:
             if conn_info in self.active_connections[doc_id]:
                 self.active_connections[doc_id].remove(conn_info)
@@ -139,6 +132,7 @@ class DocumentManager:
             if conn_info in self.active_connections[doc_id]:
                 self.active_connections[doc_id].remove(conn_info)
 
+
     def generate_user_color(self, user_id: str) -> str:
         """Generate a consistent color for a user based on their ID"""
         colors = [
@@ -146,7 +140,6 @@ class DocumentManager:
             "#8b5cf6", "#06b6d4", "#f97316", "#84cc16",
             "#ec4899", "#6366f1", "#14b8a6", "#f43f5e"
         ]
-        # Use hash of user_id to get consistent color
         hash_val = sum(ord(c) for c in str(user_id))
         return colors[hash_val % len(colors)]
 

@@ -1,6 +1,7 @@
 import { RefreshCw, Users, Wifi, WifiOff } from "lucide-react";
 
 const EditorFooter = ({ activeUsers, isConnected, content, isSaving }) => {
+  // console.log(content)
   return (
     <footer className="bg-white border-t border-gray-200 py-3 px-4 flex items-center justify-between">
       <div className="flex items-center space-x-4">

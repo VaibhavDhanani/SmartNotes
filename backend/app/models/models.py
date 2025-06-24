@@ -5,7 +5,7 @@ from datetime import datetime
 import uuid
 import enum
 
-# User Model  
+ 
 class User(Base):
     __tablename__ = "users"
     
@@ -22,7 +22,7 @@ class User(Base):
     def __repr__(self):
         return f"<User(id={self.user_id}, name='{self.username}')>"
 
-# Directory Model (Self-Referencing)  
+ 
 class Directory(Base):
     __tablename__ = "directories"
     
@@ -47,7 +47,7 @@ class Directory(Base):
     def __repr__(self):
         return f"<Directory(id={self.dir_id}, name={self.dir_name}, user_id={self.user_id})>"
 
-# Document Model (Belongs to a Directory)  
+  
 class Document(Base):
     __tablename__ = "documents"
     
@@ -60,12 +60,11 @@ class Document(Base):
     user_id = Column(Integer, ForeignKey("users.user_id",ondelete="CASCADE"), nullable=False)
     directory_id = Column(String(36), ForeignKey("directories.dir_id",ondelete="CASCADE"), nullable=False)
     
-    # Relationships
     user = relationship("User", back_populates="documents")
     directory = relationship("Directory", back_populates="documents")
 
     __table_args__ = (
-        UniqueConstraint('user_id', 'doc_name', name='unique_user_doc_name'),
+        UniqueConstraint('user_id', 'directory_id', 'doc_name', name='unique_user_doc_name'),
     )
     
     def __repr__(self):
@@ -94,6 +93,6 @@ class AccessDocument(Base):
         UniqueConstraint('doc_id', 'user_id', name='unique_doc_user_access')
     )
     
-    # Relationships
+    
     document = relationship("Document", backref="access_grants")
     user = relationship("User", backref="document_access")

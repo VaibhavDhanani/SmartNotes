@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "../contexts/UserContext";
 
 export default function useCollaborativeEditing(docId, setContent) {
@@ -14,16 +14,15 @@ export default function useCollaborativeEditing(docId, setContent) {
   const { user } = useUser();
   const currentUserId = user.userId;
   const currentUserName = user.username;
+  const WEBSOCKET_URL = import.meta.env.VITE_WEBSOCKET_URL;
 
-  //   useEffect(() => {
-  //   console.log("Remote cursors updated:", remoteCursors);
-  // }, [remoteCursors]);
-
-  const connect = useCallback(() => {
+  
+  const connect = () => {               // NOTE: Connect to WebSocket
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       return;
     }
-    const wsUrl = `ws://127.0.0.1:8000/ws/${docId}?user_id=${encodeURIComponent(
+
+    const wsUrl = `${WEBSOCKET_URL}/ws/${docId}?user_id=${encodeURIComponent(
       currentUserId
     )}&user_name=${encodeURIComponent(currentUserName)}`;
 
@@ -32,7 +31,6 @@ export default function useCollaborativeEditing(docId, setContent) {
 
     socketRef.current.onopen = () => {
       console.log("WebSocket connected");
-      setActiveUsers(prev => prev + 1);
       setIsConnected(true);
       setConnectionError(null);
       reconnectAttempts.current = 0;
@@ -47,14 +45,9 @@ export default function useCollaborativeEditing(docId, setContent) {
       console.log("WebSocket disconnected", event.code, event.reason);
       setIsConnected(false);
       setRemoteCursors(new Map());
-      if (
-        event.code !== 1000 &&
-        reconnectAttempts.current < maxReconnectAttempts
-      ) {
-        const delay = Math.min(
-          1000 * Math.pow(2, reconnectAttempts.current),
-          30000
-        );
+      
+      if (event.code !== 1000 && reconnectAttempts.current < maxReconnectAttempts) {
+        const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
         console.log(`Attempting to reconnect in ${delay}ms...`);
 
         reconnectTimeoutRef.current = setTimeout(() => {
@@ -69,20 +62,18 @@ export default function useCollaborativeEditing(docId, setContent) {
     socketRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        // console.log(data);
+        
         switch (data.type) {
           case "init":
             if (data.content !== lastUpdateRef.current) {
               setContent(data.content);
               lastUpdateRef.current = data.content;
             }
+            setActiveUsers(data.active_users || 0);
             break;
 
           case "update":
-            if (
-              data.content !== lastUpdateRef.current &&
-              data.user_id !== currentUserId
-            ) {
+            if (data.content !== lastUpdateRef.current && data.user_id !== currentUserId) {
               setContent(data.content);
               lastUpdateRef.current = data.content;
             }
@@ -99,12 +90,10 @@ export default function useCollaborativeEditing(docId, setContent) {
             break;
 
           case "cursor_update":
-            if (String((data.user_id)) !== String(currentUserId)) {
-
+            if (String(data.user_id) !== String(currentUserId)) {
               setRemoteCursors((prev) => {
                 const newCursors = new Map(prev);
-
-                if (data.position && typeof data.position === "object") {
+                if (data.position) {
                   newCursors.set(data.user_id, {
                     position: data.position,
                     user_name: data.user_name || "Anonymous",
@@ -112,14 +101,12 @@ export default function useCollaborativeEditing(docId, setContent) {
                     timestamp: Date.now(),
                   });
                 }
-
                 return newCursors;
               });
             }
             break;
 
           case "cursor_removed":
-            // Remove cursor when user disconnects
             setRemoteCursors((prev) => {
               const newCursors = new Map(prev);
               newCursors.delete(data.user_id);
@@ -139,10 +126,14 @@ export default function useCollaborativeEditing(docId, setContent) {
         console.error("Error parsing WebSocket message:", error);
       }
     };
-  }, [docId, currentUserId, currentUserName, setContent]);
+  };
 
+  
   useEffect(() => {
-    connect();
+    
+    if (currentUserId && currentUserName) {
+      connect();
+    }
 
     return () => {
       if (reconnectTimeoutRef.current) {
@@ -152,25 +143,13 @@ export default function useCollaborativeEditing(docId, setContent) {
         socketRef.current.close(1000, "Component unmounting");
       }
     };
-  }, [connect]);
+  }, [docId, currentUserId, currentUserName]);
 
-  // Heartbeat to keep connection alive
-  useEffect(() => {
-    if (!isConnected) return;
-
-    const heartbeat = setInterval(() => {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        socketRef.current.send(JSON.stringify({ type: "ping" }));
-      }
-    }, 30000);
-
-    return () => clearInterval(heartbeat);
-  }, [isConnected]);
-
-  useEffect(() => {
+  
+  useEffect(() => {                                     //NOTE: Clean up stale cursors
     const cleanup = setInterval(() => {
       const now = Date.now();
-      const timeout = 30000; // 30 seconds
+      const timeout = 30000;
 
       setRemoteCursors((prev) => {
         const newCursors = new Map();
@@ -181,13 +160,12 @@ export default function useCollaborativeEditing(docId, setContent) {
         }
         return newCursors;
       });
-
-    }, 10000); // Check every 10 seconds
+    }, 10000); 
 
     return () => clearInterval(cleanup);
   }, []);
 
-  const sendUpdate = useCallback((content) => {
+  const sendUpdate = (content) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       if (content === lastUpdateRef.current) {
         return;
@@ -195,70 +173,45 @@ export default function useCollaborativeEditing(docId, setContent) {
 
       lastUpdateRef.current = content;
 
-      const message = {
+      socketRef.current.send(JSON.stringify({
         type: "update",
         content,
         user_id: currentUserId,
         timestamp: Date.now(),
-      };
-
-      socketRef.current.send(JSON.stringify(message));
+      }));
     } else {
       console.warn("WebSocket not connected, cannot send update");
     }
-  }, []);
+  };
 
-  const sendCursorPosition = useCallback(
-    (position) => {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        
-        if (
-          position &&
-          typeof position.offsetX === "number" &&
-          typeof position.offsetY === "number"
-        ) {
-          socketRef.current.send(
-            JSON.stringify({
-              type: "cursor",
-              position,
-              user_id: currentUserId,
-              timestamp: Date.now(),
-            })
-          );
-        }
-      }
-    },
-    [currentUserId]
-  );
 
-  const sendSelection = useCallback((selection) => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(
-        JSON.stringify({
-          type: "selection",
-          selection,
-          user_id: currentUserId,
-        })
-      );
+  const sendCursorPosition = (position) => {
+    if (socketRef.current?.readyState === WebSocket.OPEN && position) {
+      socketRef.current.send(JSON.stringify({
+        type: "cursor",
+        position,
+        user_id: currentUserId,
+        timestamp: Date.now(),
+      }));
     }
-  }, []);
+  };
 
-  const reconnect = useCallback(() => {
+
+  const reconnect = () => {
     if (socketRef.current) {
       socketRef.current.close();
     }
     reconnectAttempts.current = 0;
     connect();
-  }, [connect]);
+  };
 
   return {
-    sendUpdate,
-    sendCursorPosition,
-    sendSelection,
     isConnected,
     activeUsers,
     connectionError,
     remoteCursors,
+    sendCursorPosition,
+    sendUpdate,
     reconnect,
   };
 }

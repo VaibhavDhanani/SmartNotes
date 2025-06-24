@@ -16,7 +16,6 @@ fileConfig(config.config_file_name)
 
 # Construct async DATABASE_URL
 
-
 db_user = urllib.parse.quote_plus(Config("DB_USER", default="vaibhav"))
 db_password = urllib.parse.quote_plus(Config("DB_PASSWORD", default="smart@0911102"))
 db_host = Config("DB_HOST", default="localhost")

@@ -76,7 +76,7 @@ const WorkspaceContent = ({
     try {
       const response = await updateItem(item);
       toast.update(toastId, {
-        render: "Item starred successfully!",
+        render: `Item ${item.isStared ? "starred" : "unstarred"} successfully!`,
         type: "success",
         isLoading: false,
         autoClose: 3000,
@@ -120,7 +120,7 @@ const WorkspaceContent = ({
           )}
         </h1>
 
-        {/* Only show New button when not in search mode */}
+        
         {!isSearchMode && (
           <button
             onClick={onCreateNewClick}
@@ -131,7 +131,7 @@ const WorkspaceContent = ({
         )}
       </div>
 
-      {/* Show search results count */}
+      
       {isSearchMode && (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
           <p className="text-blue-800">
@@ -152,7 +152,7 @@ const WorkspaceContent = ({
           ) : currentTab === "home" ? (
             <div>
               <Folder size={48} className="mx-auto mb-4" />
-              <p>This folder is empty.</p>
+              <p>There is no data try to refresh.</p>
               <button
                 className="mt-4 text-blue-600 hover:underline"
                 onClick={onCreateNewClick}
@@ -185,7 +185,6 @@ const WorkspaceContent = ({
                     existingNames={existingNames}
                   />
 
-                  {/* Show path for search results */}
                   {isSearchMode && item.displayPath && (
                     <div tooltip={item.displayPath}>
                       <div className="mt-1 px-2 py-1 bg-gray-100 rounded text-xs text-gray-600 truncate">

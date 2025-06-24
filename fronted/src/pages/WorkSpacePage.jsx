@@ -9,7 +9,6 @@ import CreateItemModal from "../components/Workspace/CreateItemModel";
 import WorkspaceHeader from "../components/Workspace/WorkspaceHeader";
 import WorkspaceContent from "../components/Workspace/WorkspaceContent";
 
-
 const WorkSpacePage = () => {
   const navigate = useNavigate();
   const { type, id } = useParams();
@@ -24,11 +23,35 @@ const WorkSpacePage = () => {
   let [rawItems, setRawItems] = useState([]);
   const { user, logout } = useUser();
 
+
+  console.log("user", user)
+
   useEffect(() => {
+    if (location.pathname === "/workspace") {
+      setCurrentFolderId(null);
+      setCurrentPath([]);
+    }
     setActiveMenu(getActiveMenuFromPath(location.pathname));
+    setItems((prev) => prev);
   }, [location.pathname]);
 
-  // console.log("selectedItem",selectedItem)
+
+  useEffect(() => {
+    if (!items || !Array.isArray(items)) return;
+
+    const targetFolder = items.find(
+      (item) => item.id === id && item.type === "folder"
+    );
+    if (targetFolder) {
+      setCurrentFolderId(id);
+      setCurrentPath(calculatePath(id));
+    } else {
+      setCurrentFolderId(null);
+      setCurrentPath([]);
+    }
+
+    // window.location.reload()
+  }, [type, id, items, navigate]);
 
   useEffect(() => {
     switch (activeMenu) {
@@ -84,21 +107,6 @@ const WorkSpacePage = () => {
     return path.length > 0 ? `${path.join("/")}/${item.name}` : item.name;
   };
 
-  useEffect(() => {
-    if (!items || !Array.isArray(items)) return;
-
-    const targetFolder = items.find(
-      (item) => item.id === id && item.type === "folder"
-    );
-    if (targetFolder) {
-      setCurrentFolderId(id);
-      setCurrentPath(calculatePath(id));
-    } else {
-      setCurrentFolderId(null);
-      setCurrentPath([]);
-    }
-  }, [type, id, items, navigate]);
-
   const getActiveMenuFromPath = (pathname) => {
     if (pathname.startsWith("/workspace/stared")) return "stared";
     if (pathname.startsWith("/workspace/recent")) return "recent";
@@ -116,7 +124,7 @@ const WorkSpacePage = () => {
   };
 
   const handleItemClick = (item) => {
-    setSelectedItem(item);
+    setSelectedItem((prev) => prev?.id == item.id ? null : item );
   };
 
   const handleNavigate = (path) => {
@@ -161,7 +169,7 @@ const WorkSpacePage = () => {
       toast.success(`${data.name} created successfully`);
       navigate(`/workspace/${data.type}/${data.id}`);
     } catch (error) {
-      console.error("Error creating item:", error.response.data.detail);
+      toast.error(`${error.response.data.detail}`);
     }
   };
 
@@ -211,7 +219,7 @@ const WorkSpacePage = () => {
         <div className="flex-grow w-full">
           {loading ? (
             <div className="flex items-center justify-center h-screen">
-              <div className="text-lg">Loading workspace...</div>
+              <div className="text-lg">Loading workspace... </div>
             </div>
           ) : (
             <WorkspaceContent

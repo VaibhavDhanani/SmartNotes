@@ -42,7 +42,6 @@ const Editor = ({
   content,
   sharedAccess,
 }) => {
-  // Refs
   const editorRef = useRef(null);
   const quillRef = useRef(null);
   const boxRef = useRef(null);
@@ -54,7 +53,6 @@ const Editor = ({
   const [textContent, setTextContent] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Hooks
   const navigate = useNavigate();
   const {
     isConnected,
@@ -66,7 +64,6 @@ const Editor = ({
     sendUpdate,
   } = useCollaborativeEditing(id, setContent, userId, username);
 
-  // Utility functions
   const loadQuillCSS = useCallback(() => {
     if (!document.querySelector('link[href*="quill"]')) {
       const link = document.createElement("link");
@@ -95,7 +92,6 @@ const Editor = ({
         placeholder: "Write something amazing...",
       });
 
-      // Setup throttled update function
       throttledUpdate.current = throttle(() => {
         if (!quillRef.current) return;
 
@@ -107,7 +103,6 @@ const Editor = ({
         sendUpdate(newContent);
       }, 300);
 
-      // Setup change handler
       handleChange.current = () => {
         throttledUpdate.current?.();
       };
@@ -115,7 +110,6 @@ const Editor = ({
       quillRef.current.on("text-change", handleChange.current);
       isInitialized.current = true;
 
-      // Load initial content
       if (content) {
         const delta = parseContent(content);
         if (delta && delta.ops) {
@@ -123,7 +117,6 @@ const Editor = ({
         }
       }
 
-      // Call onReady callback
       if (onReady && typeof onReady === "function") {
         onReady({
           getDelta: () => quillRef.current?.getContents(),
@@ -153,9 +146,8 @@ const Editor = ({
     document.body.appendChild(script);
   }, [setupQuillEditor]);
 
-  // Setup mouse tracking for collaborative cursors
   const setupMouseTracking = useCallback(() => {
-    const throttleDelay = 16; // ~60fps
+    const throttleDelay = 16;
     let lastSent = 0;
     let animationFrameId;
 
@@ -196,7 +188,7 @@ const Editor = ({
     }
   }, [sendCursorPosition]);
 
-  // Event handlers
+
   const handleSave = useCallback(async () => {
     if (!document || isSaving || !quillRef.current) return;
 

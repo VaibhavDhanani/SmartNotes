@@ -1,10 +1,9 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
 from app.models.models import Directory, Document, AccessDocument, User
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
 from app.schemas.directory_schema import DirectoryCreate, DirectoryUpdate
-from typing import List,Optional
 
 router = APIRouter(
     prefix="/directories",
@@ -25,11 +24,31 @@ async def get_directories(user_id: int, db: AsyncSession = Depends(get_db)):
 async def create_directory(
     directory: DirectoryCreate, db: AsyncSession = Depends(get_db)
 ):
-    new_directory = Directory(**directory.model_dump())
-    db.add(new_directory)
-    await db.commit()
-    await db.refresh(new_directory)
-    return new_directory
+    try:
+        query = select(Directory).where(Directory.user_id == directory.user_id)
+        result = await db.execute(query)
+        directories = result.scalars().all()
+        if any(d.dir_name == directory.dir_name for d in directories):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Directory with this name already exists.",
+            )
+            
+        new_directory = Directory(**directory.model_dump())
+        db.add(new_directory)
+        await db.commit()
+        await db.refresh(new_directory)
+        return new_directory
+    
+    except HTTPException as http_exc:
+        raise http_exc
+    
+    except Exception as e:
+        print("Unexpected error:", e)
+        raise HTTPException(status_code=500, detail="Internal Server Error")
+
+        
+        
 
 
 @router.put("/{dir_id}")
@@ -71,13 +90,12 @@ async def delete_directory(dir_id: str, db: AsyncSession = Depends(get_db)):
 @router.get("/tree/{user_id}")
 async def get_file_tree(user_id: int, db: AsyncSession = Depends(get_db)):
     
-    # Get user's own directories
+    
     dir_result = await db.execute(
         select(Directory).where(Directory.user_id == user_id)
     )
     directories = dir_result.scalars().all()
     
-    # Get user's own documents
     doc_result = await db.execute(
         select(Document).where(Document.user_id == user_id)
     )
@@ -99,7 +117,7 @@ async def get_file_tree(user_id: int, db: AsyncSession = Depends(get_db)):
         }
         dir_map[directory.dir_id] = dir_data
     
-    # Build the tree structure for directories
+    
     root_directories = []
     for dir_id, dir_data in dir_map.items():
         if dir_data["parent_id"] is None:

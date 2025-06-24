@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../../contexts/UserContext";
 import { getDocumentData } from "../../service/workspace.service";
 import Editor from "./Editor";
+import { toast } from "react-toastify";
 
 const DocumentEditor = () => {
   const { id } = useParams();
@@ -12,13 +13,35 @@ const DocumentEditor = () => {
   const [editorAPI, setEditorAPI] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sharedAccess, setSharedAccess] = useState([]);
+  const navigate = useNavigate();
 
+  const checkAccess = (document, sharedAccess, userId) => {
+    return (
+      document.user_id == userId ||
+      sharedAccess.some((item) => item.user_id == userId)
+    );
+  };
   useEffect(() => {
+
+    if (!user) {
+      return;
+    }
     const fetchDocument = async () => {
       try {
         setIsLoading(true);
         const { mockDocument, sharedAccess } = await getDocumentData(id);
-        // console.log(mockDocument,sharedAccess)
+        // const isAuthenticated = checkAccess(
+        //   mockDocument,
+        //   sharedAccess,
+        //   user.userId
+        // );
+
+        // if (!isAuthenticated) {
+        //   navigate("/workspace");
+        //   toast.error("You don't have access to this document");
+        //   return;
+        // }
+
         setSharedAccess(sharedAccess);
         setDocument(mockDocument);
         setContent(mockDocument.content);
@@ -30,7 +53,7 @@ const DocumentEditor = () => {
     };
 
     fetchDocument();
-  }, [id]);
+  }, [id, user]);
 
   if (isLoading) {
     return (

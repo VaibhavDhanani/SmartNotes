@@ -31,6 +31,11 @@ app.include_router(user_router)
 app.include_router(directory_router)
 app.include_router(document_router)
 app.include_router(access_document_router)
+
+@app.get("/test")
+async def test():
+    return {"message": "Hello, World!"}
+
 @app.get("/")
 async def read_root(db: AsyncSession = Depends(get_db)):
     return {"message": "Database connection is active!"}

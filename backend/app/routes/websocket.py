@@ -1,4 +1,3 @@
-# websocket_router.py
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
 from app.models.websocket_manager import DocumentManager
 import logging
@@ -26,8 +25,8 @@ async def websocket_endpoint(
                 message = json.loads(message_text)
                 msg_type = message.get("type")
 
-                current_user_id = user_id or f"anonymous_{int(time.time())}"
-                current_user_name = user_name or "Anonymous"
+                current_user_id = user_id or f"anonymous"
+                current_user_name = user_name or "anonymous"
 
                 if msg_type == "update":
                     await manager.broadcast_to_others(doc_id, websocket, {
@@ -47,8 +46,6 @@ async def websocket_endpoint(
                         current_user_name
                     )
                     # print(manager.user_cursors[doc_id])
-                else:
-                    logger.warning(f"Unhandled message type: {msg_type}")
 
             except json.JSONDecodeError as e:
                 logger.error(f"Invalid JSON received: {e}")

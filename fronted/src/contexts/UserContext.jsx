@@ -40,7 +40,7 @@ export const UserProvider = ({ children }) => {
           setIsAuthenticated(false);
         }
       } catch (err) {
-        console.error("hello", err.response.data.detail);
+        // console.error("hello", err.response.data.detail);
         localStorage.removeItem("token");
         setIsAuthenticated(false);
       }
