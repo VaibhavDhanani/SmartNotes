@@ -35,11 +35,11 @@ const EditorFooter = ({ activeUsers, isConnected, content, isSaving }) => {
         )}
       </div>
 
-      {/* Active Users */}
+      
       <div className="flex items-center space-x-2">
         <Users size={16} className="text-gray-500" />
         <span className="text-sm text-gray-600">
-          {activeUsers} user{activeUsers !== 1 ? "s" : ""} online
+          {activeUsers || 1} user{activeUsers !== 1 ? "s" : ""} online
         </span>
       </div>
     </footer>

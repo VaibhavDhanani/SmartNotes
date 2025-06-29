@@ -73,6 +73,7 @@ async def update_directory(
     return directory
 
 
+
 @router.delete("/{dir_id}")
 async def delete_directory(dir_id: str, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Directory).where(Directory.dir_id == dir_id))
@@ -85,6 +86,8 @@ async def delete_directory(dir_id: str, db: AsyncSession = Depends(get_db)):
     await db.commit()
 
     return {"message": f"Directory {dir_id} deleted successfully"}
+
+
 
 
 @router.get("/tree/{user_id}")

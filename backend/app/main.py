@@ -9,22 +9,21 @@ from app.routes.websocket import router as websocket_router
 from app.routes.access_document_routes import router as access_document_router
 from app.auth.jwt_helper import get_current_user
 from app.auth.auth_schema import TokenData
+from decouple import config
 
-origins = [
-    "*",
-]
 
 app = FastAPI()
+origins = config("ALLOWED_ORIGINS", default=["http://localhost:5173"]).split(",")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-app.include_router(websocket_router)
 
+app.include_router(websocket_router)
 app.include_router(auth_router, prefix="/auth")
 app.include_router(user_router)
 app.include_router(directory_router)
