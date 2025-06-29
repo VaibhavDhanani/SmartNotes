@@ -13,7 +13,7 @@ from decouple import config
 
 
 app = FastAPI()
-origins = config("ALLOWED_ORIGINS", default=["http://localhost:5173"]).split(",")
+origins = config("ALLOWED_ORIGINS").split(",")
 
 app.add_middleware(
     CORSMiddleware,
