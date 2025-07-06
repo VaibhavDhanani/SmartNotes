@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class DocumentManager:
     def __init__(self) -> None:
-        self.active_connections: Dict[str, List[WebSocket]] = defaultdict(list)
+        self.active_connections: Dict[str, List[WebSocket]] = defaultdict(list) # Key: docid, Value: websocket
         self.connection_info: Dict[str, Dict[str, Any]] = {}  # Key: WebSocket, Value: connection info
         self.document_content: Dict[str, str] = {}
         self.user_cursors: Dict[str, Dict[str, Dict]] = defaultdict(dict)
@@ -111,7 +111,6 @@ class DocumentManager:
         doc_id = conn_info["doc_id"]
         user_id = conn_info["user_id"]
         user_name = conn_info["user_name"]
-
         msg_type = message.get("type")
 
         if msg_type == "update":
